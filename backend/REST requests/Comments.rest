@@ -47,7 +47,7 @@ Content-Type: application/json
 ### tämä header juttu ei toimi
 //@authToken = {{login.response.headers.X-AuthToken}}
 
-@authToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1vY2hhIEFkbWluIiwiaWQiOiI1ZjA0MTFiNDJmODcwYzRlYmM0NmJhMDUiLCJpYXQiOjE1OTQ1NTgyODh9.vJgJZDCfWKt_JEU7yjiEASZtSFixmlhSfiEyslq1mnI
+@authToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVmMTk3NmEyMGVkM2I5NGJjODlkZDc5MSIsImlhdCI6MTU5NTUxMDA2OH0.8R1V3gE9i9KTmk6i8ps2pN96VsdcZcmF11AcwqeFKLQ
 ###
 // DELETE A COMMENT BY ID
 DELETE http://{{HOST}}:{{PORT}}/api/comments/5ef4699e0e13696b5c01bb59
@@ -113,7 +113,8 @@ Authorization: bearer {{authToken}}
 	//"comment": "You step in the stream, But the water has moved on. This page is not here."
 	//"comment": "Out of memory. We wish to hold the whole sky, But we never will."
 	//"comment": "Having been erased, The document you're seeking Must now be retyped."
-	"comment": "Serious error. All shortcuts have disappeared. Screen. Mind. Both are blank."
+	//"comment": "Serious error. All shortcuts have disappeared. Screen. Mind. Both are blank."
+	"comment": "Tarkista tuliko Thradin lastModified päivitettyä"
 }
 
 ###

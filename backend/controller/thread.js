@@ -84,6 +84,8 @@ threadRouter.get('/api/threads', (request, response,next) => {
           return response.status(401).json({ error: 'token missing or invalid' })
       }
       const user = await User.findById(decodedToken.id)
+      if(!user) return response.status(401).json({error: 'user not found for the token'})
+      
       
       const category = await Category.findOne({categoryName: body.categoryName})
       if(!category) 
@@ -93,9 +95,10 @@ threadRouter.get('/api/threads', (request, response,next) => {
         category_id: category._id,
         threadName: body.threadName,
         description: body.description,
-        author: user.nickname, // vai id ? 
+        author: user.nickname, 
         user_id: user._id,
-        date: new Date()
+        date: new Date(),
+        lastModified: new Date 
       })
     
       const savedThread = await thread.save()

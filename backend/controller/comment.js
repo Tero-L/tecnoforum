@@ -101,6 +101,7 @@ commentRouter.get('/api/comments/:id', (request, response, next) => {
       await user.save()
 
       thread.comments = thread.comments.concat(savedComment._id)
+      thread.lastModified = new Date()
       await thread.save()
       
       response.json(savedComment.toJSON())
