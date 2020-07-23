@@ -93,7 +93,7 @@ threadRouter.get('/api/threads', (request, response,next) => {
         category_id: category._id,
         threadName: body.threadName,
         description: body.description,
-        author: user.fullname, // vai id
+        author: user.nickname, // vai id ? 
         user_id: user._id,
         date: new Date()
       })

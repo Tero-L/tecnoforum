@@ -59,8 +59,8 @@ describe('User', function() {
     .post('/api/users')
     .send({'email': 'mocha.deplorable@test.com', 
           'password': 'salasana', 
-          'fullname': 'Mocha Deplorable', 
-          'nickname': 'java',
+          'nickname': 'Mocha Deplorable', 
+          //'fullname': 'java',
           'userType': 'user'
       })
     .end(function(err, res){
@@ -70,7 +70,7 @@ describe('User', function() {
       res.body.should.have.property('email');
       res.body.should.have.property('id'); 
       res.body.email.should.equal('mocha.deplorable@test.com');
-      res.body.fullname.should.equal('Mocha Deplorable');
+      res.body.nickname.should.equal('Mocha Deplorable');
       user_id = res.body.id; // save for later deleting 
       done();
     });
@@ -81,8 +81,8 @@ describe('User', function() {
     .post('/api/users')
     .send({'email': 'mocha.admin@gmail.com', 
           'password': 'salasana', 
-          'fullname': 'Mocha Admin', 
-          'nickname': 'coffee',
+          'nickname': 'Mocha Admin', 
+          //'fullname': 'coffee',
           'userType': 'admin'
       })
     .end(function(err, res){
@@ -92,7 +92,7 @@ describe('User', function() {
       res.body.should.have.property('email');
       res.body.should.have.property('id'); 
       res.body.email.should.equal('mocha.admin@gmail.com');
-      res.body.fullname.should.equal('Mocha Admin');
+      res.body.nickname.should.equal('Mocha Admin');
       done();
     })
   })
@@ -106,8 +106,8 @@ describe('User', function() {
         res.should.be.json; // ei tartu jos xml ? 
         res.body.should.be.a('array'); // 
         res.body[0].should.have.property('email');
-        res.body[0].should.have.property('fullname');
-        res.body[0].fullname.should.equal('Mocha Deplorable');
+        res.body[0].should.have.property('nickname');
+        res.body[0].nickname.should.equal('Mocha Deplorable');
         res.body[0].email.should.equal('mocha.deplorable@test.com');
         done();
       })
@@ -149,10 +149,11 @@ describe('User', function() {
     chai.request(server)
       .put('/api/users/')
       .set('Authorization', `bearer ${admin_token}`)
-      .send({'id': `${user_id}`,'nickname': 'admin assigned', 'email': "mocha_deplorable@test.com",'fullname':'Mocha Deplorable'})
+      .send({'id': `${user_id}`,/*'fullname': 'admin assigned',*/ 'email': "mocha_deplorable@test.com",'nickname':'Mocha Deplorable'})
       .end(function(err, res){
         res.should.have.status(200)
-        res.body.nickname.should.equal('admin assigned')
+        res.body.nickname.should.equal('Mocha Deplorable')
+        //res.body.fullname.should.equal('admin assigned')
         done()
       })
     })
@@ -161,10 +162,10 @@ describe('User', function() {
       chai.request(server)
         .put('/api/users/')
         .set('Authorization', `bearer ${admin_token}`)
-        .send({'id': `${user_id}`,'nickname': 'admin assigned updated'})
+        .send({'id': `${user_id}`,'nickname': 'admin assigned updated myself'})
         .end(function(err, res){
           res.should.have.status(200)
-          res.body.nickname.should.equal('admin assigned updated')
+          res.body.nickname.should.equal('admin assigned updated myself')
           done()
         })
       })
@@ -174,11 +175,12 @@ describe('User', function() {
     chai.request(server)
       .put('/api/users/')
       .set('Authorization', `bearer ${user_token}`)
-      .send({'id': `${user_id}`, 'nickname': 'updated by myself','email': "mocha_deplorable@test.com", 'fullname': 'Mocha Deplorable'})
+      .send({'id': `${user_id}`, /*'fullname': 'updated by myself',*/'email': "mocha_deplorable@test.com", 'nickname': 'Mocha Deplorable'})
       .end(function(err, res){
         //console.log('test driver got put response: ', res.body)
         res.should.have.status(200)
-        res.body.nickname.should.equal('updated by myself')
+        res.body.nickname.should.equal('Mocha Deplorable')
+        //res.body.nickname.should.equal('updated by myself')
         done()
       })
     })
@@ -186,12 +188,13 @@ describe('User', function() {
     
     it('should fail to update invalid email or user on /api/users/', function(done) {
       chai.request(server)
-      .put('/api/users/'+user_id)
+      .put('/api/users/')
       .set('Authorization', `bearer ${user_token}`)
       .send({'id': `${user_id}`, 'nickname': 'updated invalid email','email': 'mocha_deplorable.test.com'})
-      .end(function(error, response) {
-        response.should.have.status(401)
-        //res.body.sh
+      .end(function(err, res) {
+        //console.log('res: ', res)
+        res.should.have.status(400)
+        res.body.error.should.have.string('Validation failed')
         done()
       })  
     })
@@ -214,13 +217,15 @@ describe('User', function() {
         done()
       })  
     })
-
+    // tämän testin aikana jwt heittää exception jota ei vissiin käsitelty
     it('should fail (broken token) to delete a SINGLE user on /api/users/<id> DELETE', function(done) {
       chai.request(server)
       .delete('/api/users/'+user_id)
       .set('Authorization', `bearer ${broken_token}`)
       .end(function(error, response) {
         response.should.have.status(401)
+        response.body.should.have.property('error')
+        //response.body.should.have.string('jwt malformed')
         done()
       })  
     })
@@ -256,6 +261,8 @@ describe('Comments', function() {
     it('should add a SINGLE Comment on /api/comments POST');
     it('should update a SINGLE Commenton /api/comments/<id> PUT');
     
+  });
+    /*
     it('should delete a SINGLE user on /api/comments/<id> DELETE', function(done) {
       chai.request(server)
       .delete('/api/comments/'+comment_id)
@@ -266,8 +273,9 @@ describe('Comments', function() {
         done()
       })  
     })
-  });
-/*
+  }); 
+
+
 describe('Category', function() {
     it('should list ALL blobs on /api/categories GET');
     it('should list a SINGLE blob on /api/categories/<id> GET');

@@ -33,10 +33,11 @@ userRouter.get('/api/userscomments', async (request, response,next) => {
     
 })
 */
+
 userRouter.get('/api/users/name/:name', (request, response, next) => {
     console.log('/api/users/name', request.params.name)
     User
-        .findOne({fullname: request.params.name}) 
+        .findOne({nickname: request.params.name}) 
         .then(user => {
             console.log("user: ", user)
             if(user){
@@ -75,7 +76,7 @@ userRouter.post('/api/users/', async (request, response, next) => {
     //console.log('Hashed pwd: ', passwordHash)
     
     const user = new User({
-        fullname: body.fullname,
+        //fullname: body.fullname,
         password: body.password,
         passwordHash: passwordHash,
         email: body.email,
@@ -108,8 +109,9 @@ userRouter.delete('/api/users/:id', async (request, response, next) => {
     
     // vain admin voi poistaa käyttäjätilin
     try{
-        const decodedToken = jwt.verify(token, process.env.SECRET)
         
+        const decodedToken = jwt.verify(token, process.env.SECRET)
+
         if (!token || !decodedToken.id) {
             //return response.status(401).json({ error: 'token missing or invalid' })
             throw('error: token missing or invalid')
@@ -137,8 +139,8 @@ userRouter.delete('/api/users/:id', async (request, response, next) => {
         
         
       } catch (error) {                 
-            logger.error(error)
-            return response.status(401).json({ error: error.name})
+            //logger.error(error)
+            return response.status(401).json({ error: error})
       }
     })
     
@@ -170,18 +172,18 @@ userRouter.put('/api/users/', async (request, response, next) => {
             const updatedUser = await User.findOneAndUpdate(                
                 {_id: body.id}, 
                 {$set:{ nickname: body.nickname, 
-                        fullname: body.fullname, 
+                        //fullname: body.fullname, 
                         email: body.email,  
                         userType: body.userType,
                         description: body.description
                         }}, 
                 {new: true, omitUndefined: true, runValidators: true, context: 'query' }, // to return updated doc and skip undefined variables
                 function(err,res) {           
-                    //console.log("findOneAndUpdate err, res ", err, res)         
+                    //console.log(`findOneAndUpdate err ${err}, res ${res}`)         
                     if(err) {
-                        
+                        // hmm mitähän tulisi tehdä virheen kanssa, catch lopussa ottaa kopin...
                         // pieni BUGI! Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
-                        return response.status(400).json({error: err.message})
+                        //return response.status(400).json({err: err.message})
                         
                     }
                 } 
@@ -199,8 +201,13 @@ userRouter.put('/api/users/', async (request, response, next) => {
         }
         else return response.status(401).json({ error: 'unauthorized admin/user update operation'})
         
-    } catch (exception) {
-        next(exception)
+    } //catch (exception) {
+       // next(exception)
+   // }
+    catch(error){
+        //logger.error(error)
+        //return response.status(401).json({ error: error.name})
+        next(error)
     }
     
 })

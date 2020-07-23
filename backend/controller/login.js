@@ -7,12 +7,12 @@ loginRouter.post('/api/users/login', async(request, response, next) => {
     const body = request.body
     console.log('post login: ', body)
    
-    // fullname avulla ei tunnista käyttäjää, email toimii
+    // nickname avulla ei tunnista käyttäjää, email toimii
     let user = ""
 
     try{
         if(body.username){
-            user = await User.findOne({fullname: body.fullname})
+            user = await User.findOne({nickname: body.nickname})
         }else if(body.email){
             user = await User.findOne({email: body.email})
         }    
