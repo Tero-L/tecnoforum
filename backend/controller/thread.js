@@ -19,14 +19,14 @@ threadRouter.get('/api/threads', (request, response,next) => {
         .catch(error => next(error))
   })
 
-  // BUG! populate not working yet
   threadRouter.get('/api/threads/pages', async (request, response, next) => {
     console.log(`/api/threads/pages pagination from page ${request.query.page} limit ${request.query.limit} for thread: ${request.query.category_id}`)
    
     const options = {
-      select: {}, // 'threadName  author date comments ', // {} jos kaikki kentät
-      sort: {date: -1}, // sort -1 lifo, +1 fifo
-      //populate: 'comments',
+      select:  'threadName id lastModified', // {} jos kaikki kentät
+      //sort: {date: -1}, // sort -1 lifo, +1 fifo
+      sort: {lastModified: -1},
+      //populate: {path: 'date'},
       //populate: {path: 'comments'},//, model:'Comments', select: 'comments'},
       lean: true,
       page: parseInt(request.query.page,10), 

@@ -50,7 +50,8 @@ GET http://{{HOST}}:{{PORT}}/api/threads/5f00b433eb4b002898573747
 // 5f00d956a3e9e13e44004064 Juomat
 // 5f041eb8f0df2161d89e12c7 Yrtit
 
-GET http://{{HOST}}:{{PORT}}/api/threads/pages?page=1&limit=5&category_id=5f00b33ceb4b00289857373f
+GET http://{{HOST}}:{{PORT}}/api/threads/pages?page=1&limit=6&category_id=5f00b33ceb4b00289857373f
+
 
 
 ###
@@ -75,9 +76,9 @@ Content-Type: application/json
 Authorization: bearer {{authToken}}
 
 {
-	"id": "5f199c04b9a8e52e588f1814",
-	"threadName": "Tuhmaukset",
-	"description": "kaikki hotputtimet"
+	"id": "5f00b3fbeb4b002898573744",
+	"threadName": "Lopsums",
+	"description": "Dulce et decorum"
 }
 
 
@@ -90,8 +91,13 @@ Authorization: bearer {{authToken}}
 GET http://{{HOST}}:{{PORT}}/api/categories
 
 ###
-GET http://{{HOST}}:{{PORT}}/api/categories/5f00b34feb4b002898573740
+GET http://{{HOST}}:{{PORT}}/api/categories/5f00b33ceb4b00289857373f
 ###
+
+//GET http://{{HOST}}:{{PORT}}/api/categories/pages?page=1&limit=2&category_id=5f00b33ceb4b00289857373f
+
+###
+
 POST http://{{HOST}}:{{PORT}}/api/categories
 Content-Type: application/json
 Authorization: bearer {{authToken}}
