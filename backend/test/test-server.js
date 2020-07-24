@@ -21,14 +21,23 @@ logger.info('MOCHA with CHAI')
 
 // delete db before running tests, async koska muuten joka 2. kerta failaa. kts
 //https://stackoverflow.com/questions/42968840/mongoose-connection-collections-collection-drop-throws-error-every-other-time
-
+/*
 before(async ()=> {
   if(config.MODE) {
     logger.info('Dropping user collection')  
     await User.remove({})
   }  
 })
-
+*/
+describe('Drop collection', function() {
+  it('should drop User collection', function(done) {
+    if(config.MODE) {
+      logger.info('Dropping user collection')
+      User.collection.drop()
+    }
+    done()
+  })
+})
 
 describe('User', function() {
   it('should add a SINGLE deplorable user on /api/users POST', function(done) {
