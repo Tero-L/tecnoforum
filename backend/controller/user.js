@@ -121,22 +121,22 @@ userRouter.delete('/api/users/:id', async (request, response, next) => {
             throw('error: something wrong with token, user not found')
             //return response.status(400).json({error: 'something wrong with token, user not found'})
         }        
-        if(user.userType !== "admin") { 
+        //console.log('user ids: ', user._id, request.params.id)
+        //console.log('am I user? ', user._id.equals(request.params.id))
+        //console.log('am I admin? ', user.userType === "admin")
+        
+        if(user.userType === "admin" || user._id.equals(request.params.id)) { 
+          
+            //var error = ''
+            await User.findByIdAndRemove(request.params.id, function(err,res){
+                if(err) throw ('error: user to be removed not found')
+                if(!res && !err) response.status(401).json({error: 'user to be removed not found'})
+                else response.status(204).end() //json({message: 'success'}) //(`message: user ${request.params.id} removed`) // msg not               
+            })
+        } else {
             //return response.status(401).json({ error: 'unauthorized admin delete operation'})
             throw('unauthorized admin delete operation')
-        }
-
-        // FAIL if no user in db when trying to remove should res to NULL, or orFail to throw error
-        //await User.findByIdAndRemove(request.params.id)//.orFail('no user found to delete')
-        //response.status(204).end()
-        var error = ''
-        await User.findByIdAndRemove(request.params.id, function(err,res){
-            if(err) throw ('error: user to be removed not found')
-            if(!res && !err) response.status(401).json({error: 'user to be removed not found'})
-            else response.status(204).json('success')//(`message: user ${request.params.id} removed`) // msg not               
-        })
-        
-        
+        }     
         
       } catch (error) {                 
             //logger.error(error)
