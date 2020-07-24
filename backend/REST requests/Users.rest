@@ -44,7 +44,7 @@ Content-Type: application/json
 // LOGIN
 
 //@authToken = {{login.response.headers.X-AuthToken}} ei toimi, kopsaa käsin login responsesta
-@authToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVmMWE4OTUwYjIwMWRmNjc0NDI4ODZjYiIsImlhdCI6MTU5NTU3NjE1Mn0.-8xJzsHB1m--gxMSUuA92wT659k3M86z6OkQaAa9XHA
+@authToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVmMWE5MjZjM2RhNWM5NDQxNDRhOWQ0MiIsImlhdCI6MTU5NTU3NzA5M30.nMZGju9hgI0Mw_iRSCoBvhA56NlvVYkrKUMMrCkyIpM
 
 // LOGIN
 // returns fullname and token
@@ -78,9 +78,9 @@ Content-Type: application/json
 Authorization: bearer {{authToken}}
 
 {
-	"id": "5f1a8ef33780da1164c2ae07",
+	"id": "5f1a926083726a34ec980f9e",
 	//"email": "mochax@gmail.com"
-  	"nickname": "Mocha java"
+  	"nickname": "Mocha javafava"
 	//"description": "new cafe -admin",
 	//"userType": "admin" 
 }

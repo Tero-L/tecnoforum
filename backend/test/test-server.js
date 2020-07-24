@@ -9,6 +9,7 @@ const logger = require('../utils/logger');
 
 
 var user_id = ""
+var user2_id = ""
 var user_token = ""
 var admin_token = ""
 var broken_token = "ey1hbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1vY2hhIEFkbWluIiwiaWQiOiI1ZWZkYmM2YmUwZjY3ZDhhMDQyYTZiMzkiLCJpYXQiOjE1OTM2ODc1NzV9._znN2oYOSlhmuYcELqK7N2_p3c6_kwIMOdZxReSCs-I"
@@ -16,42 +17,18 @@ var broken_token = "ey1hbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1vY2h
 var should = chai.should();
 chai.use(chaiHttp);
 
-// delete db before running tests
-
 logger.info('MOCHA with CHAI')
-// check whether we are in test/local mode then drop collection
-//if(config.MODE) {
-//  logger.info('Dropping user collection')
-  //User.collection.drop(); 
-//}
 
-/* before - after -hooks will be run for  each  test
-  beforeEach(function(done){
-    var newUser = new User({
-      fullname: 'Mocha Deplorable',
-      email: 'mocha.deplorable@test.com',
-      nickname: 'mocha test user'
-    });
-    newUser.save(function(err) {
-      done();
-    });
-  });
+// delete db before running tests, async koska muuten joka 2. kerta failaa. kts
+//https://stackoverflow.com/questions/42968840/mongoose-connection-collections-collection-drop-throws-error-every-other-time
 
-  afterEach(function(done){
-    User.collection.drop();
-    done();
-  });
-*/
-describe('Drop collection', function() {
-  it('should drop User collection', function(done) {
-    if(config.MODE) {
-      logger.info('Dropping user collection')
-      User.collection.drop()
-    }
-    done()
-  })
+before(async ()=> {
+  if(config.MODE) {
+    logger.info('Dropping user collection')  
+    await User.remove({})
+  }  
 })
-  
+
 
 describe('User', function() {
   it('should add a SINGLE deplorable user on /api/users POST', function(done) {
@@ -76,6 +53,26 @@ describe('User', function() {
     });
   })
     
+  it('should add a SINGLE deplorable user for admin to delete on /api/users/ POST', function(done) {
+    chai.request(server)
+    .post('/api/users/')
+    .send({'email': 'admin@example.com', 
+          'password': 'salasana',
+          'nickname':'to delete by admin'
+      })
+    .end(function(err, res){
+      res.should.have.status(201);
+      res.should.be.json;
+      res.body.should.be.a('object');
+      res.body.should.have.property('email');
+      res.body.should.have.property('id'); 
+      res.body.email.should.equal('admin@example.com');
+      res.body.nickname.should.equal('to delete by admin');
+      user2_id = res.body.id; // save for later deleting 
+      done();
+    })
+  })
+
   it('should add a SINGLE admin user on /api/users POST', function(done) {
     chai.request(server)
     .post('/api/users')
@@ -149,7 +146,7 @@ describe('User', function() {
     chai.request(server)
       .put('/api/users/')
       .set('Authorization', `bearer ${admin_token}`)
-      .send({'id': `${user_id}`,/*'fullname': 'admin assigned',*/ 'email': "mocha_deplorable@test.com",'nickname':'Mocha Deplorable'})
+      .send({'id': `${user_id}`,/*'fullname': 'admin assigned',*/ 'email': "mocha.deplorable@gmail.com",'nickname':'Mocha Deplorable'})
       .end(function(err, res){
         res.should.have.status(200)
         res.body.nickname.should.equal('Mocha Deplorable')
@@ -199,26 +196,8 @@ describe('User', function() {
       })  
     })
 
-    it('should fail (not admin) to delete a SINGLE user on /api/users/<id> DELETE', function(done) {
-      chai.request(server)
-      .delete('/api/users/'+user_id)
-      .set('Authorization', `bearer ${user_token}`)
-      .end(function(error, response) {
-        response.should.have.status(401)
-        done()
-      })  
-    })
-    it('should fail (not admin) to delete a SINGLE user on /api/users/<id> DELETE', function(done) {
-      chai.request(server)
-      .delete('/api/users/'+user_id)
-      .set('Authorization', `bearer ${user_token}`)
-      .end(function(error, response) {
-        response.should.have.status(401)
-        done()
-      })  
-    })
-    // tämän testin aikana jwt heittää exception jota ei vissiin käsitelty
-    it('should fail (broken token) to delete a SINGLE user on /api/users/<id> DELETE', function(done) {
+       // tämän testin aikana jwt heittää exception jota ei vissiin käsitelty
+    it('should fail by USER (broken token) to delete ONESELF on /api/users/<id> DELETE', function(done) {
       chai.request(server)
       .delete('/api/users/'+user_id)
       .set('Authorization', `bearer ${broken_token}`)
@@ -230,10 +209,19 @@ describe('User', function() {
       })  
     })
   
+    it('should succeed by USER to delete ONESELF on /api/users/<id> DELETE', function(done) {
+      chai.request(server)
+      .delete('/api/users/'+user_id)
+      .set('Authorization', `bearer ${user_token}`)
+      .end(function(error, response) {
+        response.should.have.status(204)
+        done()
+      })  
+    })
 
-  it('should delete a SINGLE user on /api/users/<id> DELETE', function(done) {
+  it('should delete by ADMIN a SINGLE user on /api/users/<id> DELETE', function(done) {
     chai.request(server)
-    .delete('/api/users/'+user_id)
+    .delete('/api/users/'+user2_id)
     .set('Authorization', `bearer ${admin_token}`)
     .end(function(error, response) {
       response.should.have.status(204)
