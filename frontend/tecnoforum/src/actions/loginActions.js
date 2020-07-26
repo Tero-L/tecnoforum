@@ -1,13 +1,11 @@
-import { clearContactReducerState, getContacts } from './contactActions';
+// import { clearContactReducerState, getContacts } from './contactActions';
 
 //Action constants
 
-export const LOADING = 'LOADING';
-export const END_LOADING = 'END_LOADING';
-export const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
-export const LOGIN_FAILED = 'LOGIN_FAILED';
-export const LOGOUT_SUCCESS = 'LOGOUT_SUCCESS';
-export const LOGOUT_FAILED = 'LOGOUT_FAILED';
+export const LOGIN_SUCCESS = 'LOGIN_SUCCESS',
+	LOGIN_FAILED = 'LOGIN_FAILED',
+	LOGOUT_SUCCESS = 'LOGOUT_SUCCESS',
+	LOGOUT_FAILED = 'LOGOUT_FAILED';
 
 //Async Actions
 
@@ -19,7 +17,7 @@ export const onLogin = (user, history) => {
       headers: { 'Content-type': 'application/json' },
       body: JSON.stringify(user),
     };
-    dispatch(loading());
+    // dispatch(loading());
     fetch('/api/users/login', request).then((response) => {
         if (response.ok) {
           response.json().then((data) => {
@@ -42,36 +40,32 @@ export const onLogin = (user, history) => {
   };
 };
 
-export const onLogout = (token) => {
-  return (dispatch) => {
-    let request = {
-      method: 'POST',
-      mode: 'cors',
-      headers: { 'Content-type': 'application/json', Authorization: `bearer ${token}` },
-    };
-    dispatch(loading());
-    fetch('/logout', request).then((response) => {
-        dispatch(logoutSuccess());
-        dispatch(clearContactReducerState());
-      }).catch((error) => {
-        dispatch(logoutFailed(`Server responded with an error: ${error}`));
-        dispatch(clearContactReducerState());
-      });
-  };
+export const onLogout = (dispatch, token) => {
+	let request = {
+		method: 'POST',
+		mode: 'cors',
+		headers: { 'Content-type': 'application/json', Authorization: `bearer ${token}` },
+		};
+		// dispatch(loading());
+		fetch('/logout', request).then((response) => {
+			dispatch(logoutSuccess());
+		}).catch((error) => {
+			dispatch(logoutFailed(`Server responded with an error: ${error}`));
+	});
 };
 // Action Creators
 
-export const loading = () => {
-  return {
-    type: LOADING,
-  };
-};
+// export const loading = () => {
+//   return {
+//     type: LOADING,
+//   };
+// };
 
-export const endLoading = () => {
-  return {
-    type: END_LOADING,
-  };
-};
+// export const endLoading = () => {
+//   return {
+//     type: END_LOADING,
+//   };
+// };
 
 export const loginSuccess = (data) => {
   return {

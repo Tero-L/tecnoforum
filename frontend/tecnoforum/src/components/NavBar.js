@@ -1,62 +1,58 @@
 import React from 'react';
-import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import { Menu, Image, Container } from 'semantic-ui-react';
+import { makeStyles, Toolbar, AppBar, ButtonGroup, Button } from '@material-ui/core';
+
 import { onLogout } from '../actions/loginActions';
+import { useStateValue } from '../utils/StateProvider';
+// import MenuIcon from '@material-ui/icons/Menu';
 
-class NavBar extends React.Component {
-  nav(to) {
-    this.props.history.push(to);
-  }
+const useStyles = makeStyles((theme) => ({
+	toolbar: {
+		backgroundColor: `white`,
+		borderBottom: `1px solid ${theme.palette.divider}`,
+		position: 'fixed',
+		width: `auto`,
+		left:`16px`,
+		right:`16px`,
+	},
+	ButtonGroup: {
+		'position': 'absolute', 
+		'right': '0px'
+	}
+}));
 
-  loginBar = () => {
+const NavBar = (props) => {
+	const [{login}, dispatch] = useStateValue();
+
+	const loginBar = () => {
+		return (
+			<ButtonGroup variant="text" color="inherit" aria-label="text primary button group" className={classes.ButtonGroup}>
+				<Button onClick={() => props.history.push('/register')}>Register</Button>
+				<Button onClick={() => props.history.push('/login')}>Login</Button>
+			</ButtonGroup>
+		);
+	}
+
+	const loggedInBar = () => {
+		return (
+			<React.Fragment>
+				Welcome {login.user.nickname}
+				<ButtonGroup variant="text" color="inherit" aria-label="text primary button group" className={classes.ButtonGroup}>
+					<Button onClick={() => props.history.push('/')}>Account</Button>
+					<Button onClick={() => {onLogout(dispatch, login.token)}}>Logout</Button>
+				</ButtonGroup>
+			</React.Fragment>
+		);
+	}
+
+	const classes = useStyles();
+
 	return (
-		<>
-		<Menu.Item onClick={() => this.nav('/register')}>Register</Menu.Item>
-        <Menu.Item onClick={() => this.nav('/login')}>Login</Menu.Item>
-		</>
+		<Toolbar variant="dense" className={classes.toolbar}>
+			<img src={process.env.PUBLIC_URL + '/TF_logo.gif'} />
+			{login.isLogged ? loggedInBar() : loginBar()}
+		</Toolbar>
 	);
-  }
-
-  loggedInBar = () => {
-	return (
-		<>
-		<Menu.Item>Welcome {this.props.user.fullname}</Menu.Item>
-		<Menu.Item onClick={() => this.nav('/')}>Account</Menu.Item>
-		<Menu.Item onClick={() => this.props.dispatch(onLogout(this.props.token))}>Logout</Menu.Item>
-		</>
-	);
-  }
-
-  render() {
-    return (
-      <Menu fixed='top'>
-        <Container>
-          <Menu.Item onClick={() => this.nav('/')} header>
-            <Image src={process.env.PUBLIC_URL + '/TF_logo.gif'} size='large' />
-          </Menu.Item>
-          <Menu.Menu position='right'>
-            {this.props.isLogged ? this.loggedInBar() : this.loginBar()}
-          </Menu.Menu>
-        </Container>
-      </Menu>
-    );
-  }
 }
 
-const mapStateToProps = (state) => {
-  return {
-	loading: state.login.loading,
-	isLogged: state.login.isLogged,
-	token: state.login.token,
-	user: state.login.user
-  };
-};
-
-const mapDispatchToProps = (dispatch) => ({
-  dispatch
-});
-  
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(NavBar));
-
-// export default withRouter(NavBar);
+export default withRouter(NavBar);
