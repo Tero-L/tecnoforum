@@ -1,75 +1,80 @@
-import React from 'react';
-import { connect } from 'react-redux';
+import React, { useState } from 'react';
 import { withRouter } from 'react-router-dom';
-import { Form, Button, Segment, Message } from 'semantic-ui-react';
+import { makeStyles, TextField, Button, Paper } from '@material-ui/core';
+import Alert from '@material-ui/lab/Alert';
+import AlertTitle from '@material-ui/lab/AlertTitle';
 
-import Spinner from './Spinner';
 import { onLogin } from '../actions/loginActions';
+import { useStateValue } from '../utils/StateProvider';
 
-class Login extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      email: '',
-      password: ''
-    };
-  }
-
-  onChange = (event) => {
-    let state = {};
-    state[event.target.name] = event.target.value;
-    this.setState(state);
-  };
-
-  onSubmit = (event) => {
-	event.preventDefault();
-	
-	let user = {
-	  email: this.state.email,
-      password: this.state.password
+const useStyles = makeStyles((theme) => ({
+	root: {
+		width: 'fit-content',
+		padding: '20px',
+		"align-items": 'center'
+	},
+	input: {
+		paddingBottom: '10px',
+		"text-align": 'left'
+	},
+	alert: {
+		"text-align": 'left'
 	}
+}));
 
-	this.props.dispatch(onLogin(user, this.props.history));
-  };
+const Login = (props) => {
+	const [{login}, dispatch] = useStateValue();
+	const [loginForm, setloginForm] = useState({
+		username:"",
+		password:""
+	});
 
-  render() {
-	const isLoading = this.props.loading && <Spinner />;
-	const fail = this.props.error.length > 0 && <Message error header='Login was unsuccessful' content={this.props.error} />; 
-    return (
-	  <div>
-		{isLoading}
-		{fail}
-		<Segment>
-			<Form>
-			<Form.Field>
-				<label htmlFor='email'>Email</label>
-				<input type='email' name='email' placeholder='Email' value={this.state.email} onChange={this.onChange} />
-			</Form.Field>
-			</Form>
+	const onChange = (event) => {
+		setloginForm({
+			...loginForm,
+			[event.target.name]:event.target.value
+		})
+	};
+	
+	const onSubmit = (event) => {
+		event.preventDefault();
+		
+		let user = {
+			email: loginForm.username,
+			password: loginForm.password
+		}
+	
+		onLogin(dispatch, user, props.history);
+	};
+
+	// const isLoading = .props.loading && <Spinner />;
+	const classes = useStyles();
+	const fail = login.error.length > 0 && (<React.Fragment>
+			<Alert severity="error" className={classes.alert}>
+				<AlertTitle>Login was unsuccessful</AlertTitle>
+				{login.error}
+			</Alert>
 			<br/>
-			<Form>
-			<Form.Field>
-				<label htmlFor='password'>Password</label>
-				<input type='password' name='password' placeholder='Password' value={this.state.password} onChange={this.onChange} />
-			</Form.Field>
-			</Form>
-			<br/>
-			<Button position='right' onClick={this.onSubmit}>Log In</Button>
-		</Segment>
-	  </div>
-    );
-  }
+		</React.Fragment>);
+	console.log("did this rerender?");
+	return (
+		<React.Fragment>
+			<center>
+				<Paper elevation={1} className={classes.root}>
+					{fail}
+					<form>
+						<TextField label="Email" name="username" type="email" required variant="outlined" 
+							className={classes.input} onChange={onChange}/>
+						<br/>
+						<TextField label="Password" name="password" type="password" required variant="outlined" 
+							className={classes.input} onChange={onChange}/>
+						<br/>
+					</form>
+					<Button variant="contained" onClick={onSubmit}>Log In</Button>
+				</Paper>
+			</center>
+		</React.Fragment>
+	);
 }
 
-const mapStateToProps = (state) => {
-	return {
-	  loading: state.login.loading,
-	  error: state.login.error
-	};
-};
-
-const mapDispatchToProps = (dispatch) => ({
-	dispatch
-});
-  
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Login));
+export default withRouter(Login);

@@ -4,6 +4,7 @@ const loadInitialState = () => {
 	if ( sessionStorage.getItem ('mainstate') ) 
 	{
 		let mainstate = JSON.parse(sessionStorage.getItem('mainstate'));
+		mainstate.login.error = "";
 		return mainstate;
 	}
 	else

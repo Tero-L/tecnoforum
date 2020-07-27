@@ -3,15 +3,21 @@ import { Switch, Route, Redirect } from 'react-router-dom';
 import { withRouter } from 'react-router-dom';
 import { Container } from '@material-ui/core';
 
+import { useStateValue } from './utils/StateProvider';
 import NavBar from './components/NavBar';
+import Login from './components/Login';
 
 const App = ({ history, match }) => {
+	const [{login}] = useStateValue();
 	console.log("did this rerender?");
 	return (
 		<React.Fragment>
 		<NavBar/>
-		<Container maxWidth="md">
-			<div style={{ 'paddingTop': '100px' }}>
+		<Container maxWidth="md" style={{ 'paddingTop': '100px' }}>
+			<Switch>
+				<Route exact path='/login/' render={() => (login.isLogged ? <Redirect to='/' /> : <Login/>)} />
+				{/* <Route render={() => <ListAllCategories history={history} />} /> */}
+			</Switch>
 		{/* <Container style={{ 'paddingTop': '100px' }}>
 			<Switch>
 			<Route exact path='/users/' render={() => <ListAllUsers />} />
@@ -28,7 +34,6 @@ const App = ({ history, match }) => {
 			<Route render={() => <ListAllCategories history={history} />} />
 			</Switch>
 		</Container> */}
-			</div>
 		</Container>
 		</React.Fragment>
 	);

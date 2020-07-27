@@ -9,8 +9,7 @@ export const LOGIN_SUCCESS = 'LOGIN_SUCCESS',
 
 //Async Actions
 
-export const onLogin = (user, history) => {
-  return (dispatch) => {
+export const onLogin = (dispatch, user, history) => {
     let request = {
       method: 'POST',
       mode: 'cors',
@@ -37,7 +36,6 @@ export const onLogin = (user, history) => {
       }).catch((error) => {
         dispatch(loginFailed(`Server responded with status: ${error}`));
       });
-  };
 };
 
 export const onLogout = (dispatch, token) => {
