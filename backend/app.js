@@ -26,6 +26,7 @@ mongoose.connect(config.MONGODB_URI, {
 		logger.info(err);
 	});
 
+app.use(express.static('build'))
 app.use(cors())
 //app.use(express.static('build')) //NOT BUILT YET
 app.use(express.json())
