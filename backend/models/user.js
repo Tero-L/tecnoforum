@@ -11,11 +11,11 @@ const validator = require('validator')
 // just before app.js connectMongo
 // Update note PUT/FindOneAndUpdate requires context set otherwise fails for missing fields
 const userSchema = mongoose.Schema({
-    fullname: {
+    nickname: {
       type: String,
-      required:true,
+      //required:true, // miten käy jos !required ja minmaxit ?
       minlength: 4,
-      maxlength: 20
+      maxlength: 40
     },
     passwordHash: String,
     email: {
@@ -33,7 +33,7 @@ const userSchema = mongoose.Schema({
           //isAsync: false // oliko tällä merkitystä kokeilin ilman ja tämän kanssa ei vaikusta update kohdalla
         }
     },
-    nickname: String,
+    //fullname: String,
     userType: {
       type: String,
       enum : ['user','moderator','admin'],

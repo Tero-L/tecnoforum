@@ -89,7 +89,7 @@ commentRouter.get('/api/comments/:id', (request, response, next) => {
       const comment = new Comments({
         thread_id: body.thread_id,
         comment: body.comment,
-        author: user.fullname,
+        author: user.nickname,
         user_id: user._id,
         date: new Date()
         
@@ -101,6 +101,7 @@ commentRouter.get('/api/comments/:id', (request, response, next) => {
       await user.save()
 
       thread.comments = thread.comments.concat(savedComment._id)
+      thread.lastModified = new Date()
       await thread.save()
       
       response.json(savedComment.toJSON())
