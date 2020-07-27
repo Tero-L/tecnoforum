@@ -1,15 +1,26 @@
-import { combineReducers } from 'redux';
+import { LoginReducer, loginInit } from '../reducers/loginReducer';
 
-import login from './loginReducer';
-import contact from './contactReducer';
-import register from './registerReducer';
-import category from './categoryReducer';
-import thread from './threadReducer';
+const loadInitialState = () => {
+	if ( sessionStorage.getItem ('mainstate') ) 
+	{
+		let mainstate = JSON.parse(sessionStorage.getItem('mainstate'));
+		mainstate.login.error = "";
+		return mainstate;
+	}
+	else
+	{
+		return {
+			login: loginInit
+		};
+	}
+}
 
-export default combineReducers({
-  login,
-  contact,
-  register,
-  category,
-  thread
-});
+export const initialState = loadInitialState ();
+  
+export const MainReducer = ({login}, action) => {
+	let newState = ({
+		login: LoginReducer (login, action )
+	});
+	sessionStorage.setItem('mainstate', JSON.stringify(newState));
+	return newState;
+};
