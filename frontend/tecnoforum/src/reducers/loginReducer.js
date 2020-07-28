@@ -3,52 +3,66 @@ import { LOGIN_SUCCESS,
 	LOGOUT_SUCCESS,
 	LOGOUT_FAILED } from '../actions/loginActions';
 
-export const loginInit = {
-	token: '',
-	user: {},
-	isLogged: false,
-	error: '',
-};
+const sessionString = 'loginstate';
+const loadInitialState = () => {
+	if ( sessionStorage.getItem (sessionString) ) 
+	{
+		let loginstate = JSON.parse(sessionStorage.getItem(sessionString));
+		loginstate.error = "";
+		return loginstate;
+	}
+	else
+	{
+		return {
+			token: '',
+			user: {},
+			isLogged: false,
+			error: '',
+		};
+	}
+}
+
+export const loginInit = loadInitialState ();
 
 export const LoginReducer = (login, action) => {
 	console.log('LoginReducer, action:', action);
+	let state = {};
 	switch (action.type)
 	{
 		case LOGIN_SUCCESS:
-			return {
+			state = {
 				isLogged: true,
 				token: action.data.token,
 				user: action.data.user,
 				error: '',
 				loading: false,
 			};
+			break;
 		case LOGIN_FAILED:
-			return {
+			state = {
 				...login,
 				error: action.error
 			};
+			break;
 		case LOGOUT_SUCCESS:
-			return {
+			state = {
 				isLogged: false,
 				token: '',
 				user: {},
 				error: ''
 			};
+			break;
 		case LOGOUT_FAILED:
-			return {
+			state = {
 				isLogged: false,
 				token: '',
 				user: {},
 				error: action.error
 			};
+			break;
 		default:
 			return login;
 	}
+	sessionStorage.setItem(sessionString, JSON.stringify(state));
+	return state;
 }
-
-// const endLoading = (login) =>
-// {
-// 	return {
-// 		...LoginReducer(login, {type: LOADING})
-// 	}
-// }

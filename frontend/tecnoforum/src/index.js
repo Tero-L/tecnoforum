@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 
 import { StateProvider } from './utils/StateProvider';
-import { initialState, MainReducer } from './reducers/index';
+import { initialState, MainReducer } from './reducers/reducers';
 import App from './App';
 
 ReactDOM.render(

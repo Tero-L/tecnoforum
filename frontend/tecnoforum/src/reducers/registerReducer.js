@@ -1,56 +1,48 @@
-import {
-	REGISTER_SUCCESS,
-	REGISTER_FAILED,
-  } from '../actions/registerActions';
-  
-  const getInitialStateFromStorage = () => {
-	if (sessionStorage.getItem('registerstate')) {
-	  let registerstate = JSON.parse(sessionStorage.getItem('registerstate'));
-	  registerstate.error = '';
-	  registerstate.success = false;
-	  return registerstate;
-	} else {
-	  return {
-		token: '',
-		loading: false,
-		error: '',
-		success: false
-	  };
+import { REGISTER_SUCCESS,
+	REGISTER_FAILED } from '../actions/registerActions';
+
+const sessionString = 'registerstate';
+const loadInitialState = () => {
+	if ( sessionStorage.getItem (sessionString) ) 
+	{
+		let registerstate = JSON.parse(sessionStorage.getItem(sessionString));
+		registerstate.error = "";
+		registerstate.success = false;
+		return registerstate;
 	}
-  };
-  
-  const saveToStorage = (state) => {
-	sessionStorage.setItem('registerstate', JSON.stringify(state));
-  };
-  
-  const initialState = getInitialStateFromStorage();
-  
-  const registerReducer = (state = initialState, action) => {
+	else
+	{
+		return {
+			error: '',
+			success: false
+		};
+	}
+}
+
+export const registerInit = loadInitialState ();
+
+export const RegisterReducer = (register, action) => {
 	console.log('RegisterReducer, action:', action);
-	let tempState = {};
-	switch (action.type) {
-	  case REGISTER_SUCCESS:
-		tempState = {
-		  ...state,
-		  error: '',
-		  loading: false,
-		  success: true
-		};
-		saveToStorage(tempState);
-		return tempState;
-	  case REGISTER_FAILED:
-		tempState = {
-		  ...state,
-		  error: action.error,
-		  loading: false,
-		  success: false
-		};
-		saveToStorage(tempState);
-		return tempState;
-	  default:
-		return state;
+	let state = {};
+	switch (action.type)
+	{
+		case REGISTER_SUCCESS:
+			state = {
+				...register,
+				error: '',
+				success: true
+			};
+			break;
+		case REGISTER_FAILED:
+			state = {
+				...register,
+				error: action.error,
+				success: false
+			};
+			break;
+		default:
+			return register;
 	}
-  };
-  
-  export default registerReducer;
-  
+	sessionStorage.setItem(sessionString, JSON.stringify(state));
+	return state;
+}
