@@ -1,7 +1,8 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { withRouter } from 'react-router-dom';
 import { makeStyles, Toolbar, AppBar, ButtonGroup, Button } from '@material-ui/core';
 
+import Login from './Login';
 import { onLogout } from '../actions/loginActions';
 import { useStateValue } from '../utils/StateProvider';
 import { TText } from './TText';
@@ -25,20 +26,46 @@ const useStyles = makeStyles((theme) => ({
 const NavBar = (props) => {
 	const [{login}, dispatch] = useStateValue();
 
-	const loginBar = () => {
-		return (
-			<ButtonGroup variant="text" color="inherit" aria-label="text primary button group" className={classes.ButtonGroup}>
-				<Button onClick={() => props.history.push('/register')}>Register</Button>
-				<Button onClick={() => props.history.push('/login')}>Login</Button>
-			</ButtonGroup>
-		);
+	const [loginBar, setLoginBar] = useState({
+		showLoginBar: false,
+		tab: 1
+	});
+
+	const onClickImage = (event, dest) => {
+		event.preventDefault();
+		closeLoginBar();
+		props.history.push(dest);
 	}
 
-	const loggedInBar = () => {
+	const openCloseLoginBar = (tab) => {
+		if(tab !== loginBar.tab)
+		{
+			setLoginBar({showLoginBar: true, tab:tab});
+			return;
+		}
+		
+		setLoginBar({showLoginBar: !loginBar.showLoginBar, tab:tab});
+	}
+
+	const closeLoginBar = () => {
+		setLoginBar({showLoginBar: false, tab:0});
+	}
+
+	const buttonGroup = () => {
+		if (login.isLogged)
+		{
+			return (
+				<ButtonGroup variant="text" color="inherit" aria-label="text primary button group" className={classes.ButtonGroup}>
+					<Button onClick={() => props.history.push('/')}>Welcome {login.user.nickname}</Button>
+					<Button onClick={() => {onLogout(dispatch, login.token)}}>Logout</Button>
+				</ButtonGroup>
+			);
+		}
+
 		return (
 			<ButtonGroup variant="text" color="inherit" aria-label="text primary button group" className={classes.ButtonGroup}>
-				<Button onClick={() => props.history.push('/')}>Welcome {login.user.nickname}</Button>
-				<Button onClick={() => {onLogout(dispatch, login.token)}}>Logout</Button>
+				<Button onClick={() => openCloseLoginBar(0)}>Register</Button>
+				<Button onClick={() => openCloseLoginBar(1)}>Login</Button>
 			</ButtonGroup>
 		);
 	}
@@ -46,10 +73,13 @@ const NavBar = (props) => {
 	const classes = useStyles();
 	console.log("did this rerender?");
 	return (
-		<Toolbar variant="dense" className={classes.toolbar}>
-			<img src={process.env.PUBLIC_URL + '/TF_logo.gif'} />
-			{login.isLogged ? loggedInBar() : loginBar()}
-		</Toolbar>
+		<React.Fragment>
+			<Toolbar variant="dense" className={classes.toolbar}>
+				<a href="/" onClick={(e) => onClickImage (e, "/")}><img src={process.env.PUBLIC_URL + '/TF_logo.gif'} /></a>
+				{buttonGroup()}
+			</Toolbar>
+			{loginBar.showLoginBar && <Login tab={loginBar.tab} openCloseLoginBar={openCloseLoginBar} closeLoginBar={closeLoginBar}/>}
+		</React.Fragment>
 	);
 }
 
