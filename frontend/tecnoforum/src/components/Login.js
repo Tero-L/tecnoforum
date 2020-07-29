@@ -132,7 +132,7 @@ const Login = (props) => {
 	return (
 		<React.Fragment>
 			<div className={classes.root}>
-				<Paper elevation={1} square className={classes.box}>
+				<Paper elevation={2} className={classes.box}>
 					<Tabs indicatorColor="primary" textColor="primary" variant="fullWidth" value={tab} onChange={handleChange} className={classes.tabs}>
 						<Tab label="Register" id='0'/>
 						<Tab label="Login" id='1'/>

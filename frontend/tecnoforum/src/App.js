@@ -5,7 +5,7 @@ import { Container } from '@material-ui/core';
 
 import { useStateValue } from './utils/StateProvider';
 import NavBar from './components/NavBar';
-import Login from './components/Login';
+import ListAllCategories from './components/ListAllCategories';
 
 const App = ({ history, match }) => {
 	const [{login}] = useStateValue();
@@ -15,8 +15,7 @@ const App = ({ history, match }) => {
 			<NavBar/>
 			<Container maxWidth="md" style={{ 'paddingTop': '100px' }}>
 				<Switch>
-					<Route exact path='/login/' render={() => (login.isLogged ? <Redirect to='/' /> : <Login/>)} />
-					{/* <Route render={() => <ListAllCategories history={history} />} /> */}
+					<Route render={() => <ListAllCategories/>} />
 				</Switch>
 			{/* <Container style={{ 'paddingTop': '100px' }}>
 				<Switch>
