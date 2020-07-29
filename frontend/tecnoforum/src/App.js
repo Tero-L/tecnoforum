@@ -13,7 +13,7 @@ const App = ({ history, match }) => {
 	return (
 		<React.Fragment>
 			<NavBar/>
-			<Container maxWidth="md" style={{ 'paddingTop': '100px' }}>
+			<Container maxWidth="lg" style={{ 'paddingTop': '100px' }}>
 				<Switch>
 					<Route render={() => <ListAllCategories/>} />
 				</Switch>

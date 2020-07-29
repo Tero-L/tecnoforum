@@ -1,11 +1,11 @@
 import React, {useState} from 'react';
 import { withRouter } from 'react-router-dom';
-import { makeStyles, Toolbar, AppBar, ButtonGroup, Button } from '@material-ui/core';
+import { makeStyles, Toolbar, ButtonGroup, Button } from '@material-ui/core';
 
 import Login from './Login';
 import { onLogout } from '../actions/loginActions';
 import { useStateValue } from '../utils/StateProvider';
-import { TText } from './TText';
+// import { TText } from './TText';
 // import MenuIcon from '@material-ui/icons/Menu';
 
 const useStyles = makeStyles((theme) => ({

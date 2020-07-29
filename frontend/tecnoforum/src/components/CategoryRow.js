@@ -1,15 +1,16 @@
 import React from 'react';
-import { makeStyles, withStyles, TableRow, TableCell } from '@material-ui/core';
+import { makeStyles, withStyles, TableRow, TableCell, Link } from '@material-ui/core';
 
 import { TText } from './TText';
 
 const StyledTableCell = withStyles((theme) => ({
 	head: {
 		backgroundColor: theme.palette.common.black,
-		color: theme.palette.common.white,
+		color: theme.palette.common.white
 	},
 	body: {
 		fontSize: 14,
+		verticalAlign:"text-top"
 	},
 }))(TableCell);
   
@@ -22,26 +23,46 @@ const StyledTableRow = withStyles((theme) => ({
 }))(TableRow);
 
 const useStyles = makeStyles((theme) => ({
-	root: {
+	category: {
+		"color": "inherit",
 		"text-decoration": "none", 
-		"color": "inherit"
+		"&:hover":{
+			"color": "blue"
+		}
+	},
+	thread: {
+		"text-decoration": "none",
+		maxWidth: "300px",
+		overflow: "hidden",
+		textOverflow: "ellipsis"
+	},
+	description: {
+		maxWidth: "600px"
 	}
 }));
 
 export const CategoryRow = (props) => {
-	const { categoryName, threads, id, description } = props.item;
+	const { categoryName, threads, id, description, latest } = props.item;
 	const classes = useStyles();
+	const latestThreads = latest && latest.map((thread) => {
+		return (
+			<React.Fragment key={thread.id}>
+				<TText v="button"><a className={classes.thread} href={`/t/${thread.id}`} onClick={props.onClick}>{thread.threadName}</a></TText>
+				<TText v="caption"><a className={classes.thread} href={`/u/${thread.user_id}`} onClick={props.onClick}>{thread.author}</a> / {thread.lastModified}</TText>
+			</React.Fragment>
+		);
+	});
     return (
 		<StyledTableRow>
-			<StyledTableCell component="th" scope="row">
-				<TText v="h6"><a className={classes.root} href={`/c/${id}`} onClick={props.onClick}>{categoryName}</a></TText>
-				{description}
+			<StyledTableCell size="small" component="th" scope="row">
+				<TText v="h6"><a className={classes.category} href={`/c/${id}`} onClick={props.onClick}>{categoryName}</a></TText>
+				<TText v="caption" c="span"><div className={classes.description}>{description}</div></TText>
 			</StyledTableCell>
 			<StyledTableCell size="small" align="center">
 				{threads ? threads.length : 0}
 			</StyledTableCell>
-			<StyledTableCell>
-				-
+			<StyledTableCell size="small">
+				{latestThreads}
 			</StyledTableCell>
 		</StyledTableRow>
 	);

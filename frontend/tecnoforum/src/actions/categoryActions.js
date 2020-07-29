@@ -6,6 +6,8 @@ export const FETCH_CATEGORY_SUCCESS = 'FETCH_CATEGORY_SUCCESS';
 export const FETCH_CATEGORY_FAILED = 'FETCH_CATEGORY_FAILED';
 export const FETCH_THREADS_SUCCESS = 'FETCH_THREADS_SUCCESS';
 export const FETCH_THREADS_FAILED = 'FETCH_THREADS_FAILED';
+export const FETCH_LATEST_THREADS_SUCCESS = 'FETCH_LATEST_THREADS_SUCCESS';
+export const FETCH_LATEST_THREADS_FAILED = 'FETCH_LATEST_THREADS_FAILED';
 export const ADD_CATEGORY_SUCCESS = 'ADD_CATEGORY_SUCCESS';
 export const ADD_CATEGORY_FAILED = 'ADD_CATEGORY_FAILED';
 export const REMOVE_CATEGORY_SUCCESS = 'REMOVE_CATEGORY_SUCCESS';
@@ -29,6 +31,8 @@ export const getCategories = (dispatch, token) => {
 		if (response.ok) {
 			response.json().then((data) => {
 				dispatch(fetchCategoriesSuccess(data));
+				for ( let i = 0; i < data.length; ++i )
+					getLatestThreads(dispatch, token, data[i].id);
 			}).catch((error) => {
 				dispatch(fetchCategoriesFailed(`Failed to parse data. Try again error ${error}`));
 			});
@@ -118,6 +122,37 @@ export const getThreads = (dispatch, token, id, page) => {
 	});
 }
 
+export const getLatestThreads = (dispatch, token, id) => {
+	let request = {
+		method: 'GET',
+		mode: 'cors',
+		headers: { 'Content-type': 'application/json', Authorization: `bearer ${token}` },
+	};
+	let url = `/api/threads/pages?page=1&limit=3&category_id=${id}`;
+	fetch(url, request).then((response) => {
+			if (response.ok) {
+				response.json().then((data) => {
+					dispatch(fetchLatestThreadsSuccess({threads:data.docs,id:id}));
+				}).catch((error) => {
+					dispatch(fetchLatestThreadsFailed(`Failed to parse data. Try again error ${error}`));
+				});
+			} else {
+				if (response.status === 403) {
+					dispatch(fetchLatestThreadsFailed('Server responded with a session failure. Logging out!'));
+					dispatch(logoutSuccess());
+				} else {
+					response.json().then((data) => {
+						dispatch(fetchLatestThreadsFailed(`Server responded with status: ${data.error}`));
+					}).catch((error) => {
+						dispatch(fetchLatestThreadsFailed(`Server responded with status: ${response.status}`));
+					});
+				}
+			}
+	}).catch((error) => {
+		dispatch(fetchLatestThreadsFailed(`Server responded with an error: ${error}`));
+	});
+}
+
 //Action creators
 
 export const clearCategories = () => {
@@ -164,6 +199,20 @@ export const fetchThreadsSuccess = (threads) => {
 export const fetchThreadsFailed = (error) => {
 	return {
 		type: FETCH_THREADS_FAILED,
+		error: error,
+	};
+};
+
+export const fetchLatestThreadsSuccess = (data) => {
+	return {
+		data: data,
+		type: FETCH_LATEST_THREADS_SUCCESS
+	};
+};
+	
+export const fetchLatestThreadsFailed = (error) => {
+	return {
+		type: FETCH_LATEST_THREADS_FAILED,
 		error: error,
 	};
 };

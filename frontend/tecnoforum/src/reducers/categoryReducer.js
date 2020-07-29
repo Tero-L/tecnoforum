@@ -4,6 +4,8 @@ import { FETCH_CATEGORIES_SUCCESS,
 	FETCH_CATEGORY_FAILED,
 	FETCH_THREADS_SUCCESS,
 	FETCH_THREADS_FAILED,
+	FETCH_LATEST_THREADS_SUCCESS,
+	FETCH_LATEST_THREADS_FAILED,
 	ADD_CATEGORY_SUCCESS,
 	ADD_CATEGORY_FAILED,
 	REMOVE_CATEGORY_SUCCESS,
@@ -71,6 +73,22 @@ export const CategoryReducer = (category, action) => {
 			}
 			break;
 		case FETCH_THREADS_FAILED:
+			state = {
+				...category,
+				error: action.error,
+			};
+			break;
+		case FETCH_LATEST_THREADS_SUCCESS:
+			let categories = [...category.categories];
+			let categoryIndex = categories.findIndex(category => category.id === action.data.id);
+			categories[categoryIndex].latest = action.data.threads;
+			state = {
+				...category,
+				categories:categories,
+				error: '',
+			}
+			break;
+		case FETCH_LATEST_THREADS_FAILED:
 			state = {
 				...category,
 				error: action.error,
