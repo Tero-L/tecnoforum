@@ -23,7 +23,7 @@ threadRouter.get('/api/threads', (request, response,next) => {
     console.log(`/api/threads/pages pagination from page ${request.query.page} limit ${request.query.limit} for thread: ${request.query.category_id}`)
    
     const options = {
-      select:  'threadName id lastModified', // {} jos kaikki kentät
+      select:  {}, // 'threadName id lastModified', // {} jos kaikki kentät
       //sort: {date: -1}, // sort -1 lifo, +1 fifo
       sort: {lastModified: -1},
       //populate: {path: 'date'},
@@ -160,4 +160,10 @@ threadRouter.put('/api/threads', async (request, response, next) => {
     }
   })
 
+  threadRouter.delete('/api/threads/:id', async (request, response, next) => {
+    // find the thread by its Id, delete itself and if ok then its comments and remove from categories list
+    // delete by admin  or user who created it, 
+    console.log('Attemptuing to delete id: ', request.params.id)
+    return response.status(401).json({ error: 'Delete operation not implemented yet.'})
+  })
 module.exports = threadRouter
