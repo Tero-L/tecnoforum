@@ -27,12 +27,13 @@ GET http://{{HOST}}:{{PORT}}/api/users/id/5f0411b42f870c4ebc46ba05
 //
 // POST a user, userType enum : ['user','moderator','admin']
 // default "user"
+# @name post
 POST http://{{HOST}}:{{PORT}}/api/users/
 Content-Type: application/json
 
 {
-  	"nickname": "Mocha Deplorable",
-	"email": "mocha.deplorable@gmail.com",
+  	"nickname": "delete_me",
+	"email": "mocha.delete@gmail.com",
 	"userType": "user", 
 	//"nickname": "Mocha Admin",
     //"email": "mocha.admin@gmail.com",
@@ -41,13 +42,13 @@ Content-Type: application/json
 }
 
 ###
+
+@id_of_last_user = {{post.response.body.id}}
+
+
 // LOGIN
 
-//@authToken = {{login.response.headers.X-AuthToken}} ei toimi, kopsaa käsin login responsesta
-@authToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVmMWE5MjZjM2RhNWM5NDQxNDRhOWQ0MiIsImlhdCI6MTU5NTU3NzA5M30.nMZGju9hgI0Mw_iRSCoBvhA56NlvVYkrKUMMrCkyIpM
-
-// LOGIN
-// returns fullname and token
+# @name login
 POST http://{{HOST}}:{{PORT}}/api/users/login
 Content-Type: application/json
 
@@ -64,12 +65,11 @@ Content-Type: application/json
 ###
 
 
-//@authToken = {{login.response.headers.body.$.token}}
+@authToken = {{login.response.body.token}}
 
 //-------------------------
-//DELETE http://{{HOST}}:{{PORT}}/api/users/name_or_id
-DELETE http://{{HOST}}:{{PORT}}/api/users/5f1a8d20a112503c40b304bc
-//Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ikphc2thIEpva3VuZW4iLCJpZCI6IjVlZWI2MjJmMTQ5ZWNiM2E4MGE4MTExNCIsImlhdCI6MTU5MjU1MDg4N30.KIeV5xe8Z9obPWP6CHEyQ9_SlcmeJJuAaWFY4Tlwnr0
+//DELETE 
+DELETE http://{{HOST}}:{{PORT}}/api/users/{{id_of_last_user}}
 Authorization: bearer {{authToken}}
 ###
 
@@ -78,7 +78,7 @@ Content-Type: application/json
 Authorization: bearer {{authToken}}
 
 {
-	"id": "5f1a926083726a34ec980f9e",
+	"id": "{{id_of_last_user}}",
 	//"email": "mochax@gmail.com"
   	"nickname": "Mocha javafava"
 	//"description": "new cafe -admin",

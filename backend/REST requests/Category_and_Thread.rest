@@ -19,17 +19,23 @@
 // Helper LOGIN request to login and use token for the session
 // copy the token value to the variable @authToken below 
 ////////////////////////////////////////////////////////////////////////
+# @name login
 POST http://{{HOST}}:{{PORT}}/api/users/login
 Content-Type: application/json
 
 {
 	//"email": "esa.maaninka@gmail.com",
 	//"email": "mocha.admin@gmail.com",
-	"email": "mocha.deplorable@test.com",
+	"email": "mocha.admin@gmail.com",
   	"password": "salasana"
 }
 
-@authToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVmMTk3NmEyMGVkM2I5NGJjODlkZDc5MSIsImlhdCI6MTU5NTUxMzg0MH0.V15VWGJMzuiQULqmorj7iowo0q1UbrdqyucRhR8YuAM
+###
+//@authToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVmMTk3NmEyMGVkM2I5NGJjODlkZDc5MSIsImlhdCI6MTU5NTUxMzg0MH0.V15VWGJMzuiQULqmorj7iowo0q1UbrdqyucRhR8YuAM
+@authToken = {{login.response.body.token}}
+
+
+
 
 
 ///////////////
@@ -40,7 +46,7 @@ GET http://{{HOST}}:{{PORT}}/api/threads
 
 ###
 
-GET http://{{HOST}}:{{PORT}}/api/threads/5f00b433eb4b002898573747
+GET http://{{HOST}}:{{PORT}}/api/threads/{{thread.response.body.id}}
 
 ###
 
@@ -50,12 +56,14 @@ GET http://{{HOST}}:{{PORT}}/api/threads/5f00b433eb4b002898573747
 // 5f00d956a3e9e13e44004064 Juomat
 // 5f041eb8f0df2161d89e12c7 Yrtit
 
-GET http://{{HOST}}:{{PORT}}/api/threads/pages?page=1&limit=6&category_id=5f00b33ceb4b00289857373f
-
-
+GET http://{{HOST}}:{{PORT}}/api/threads/pages?page=1&limit=3&category_id=5f00b33ceb4b00289857373f
 
 ###
 
+DELETE http://{{HOST}}:{{PORT}}/api/threads/{{thread.response.body.id}}
+
+###
+# @name thread
 POST http://{{HOST}}:{{PORT}}/api/threads
 Content-Type: application/json
 Authorization: bearer {{authToken}}
@@ -76,8 +84,9 @@ Content-Type: application/json
 Authorization: bearer {{authToken}}
 
 {
-	"id": "5f00b3fbeb4b002898573744",
-	"threadName": "Lopsums",
+	//"id": "5f00b3fbeb4b002898573744",
+	"id": "{{thread.response.body.id}}",
+	"threadName": "Lorinat",
 	"description": "Dulce et decorum"
 }
 

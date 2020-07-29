@@ -126,6 +126,7 @@ commentRouter.put('/api/comments', async (request, response, next) => {
     }
 
     const modifying_user = await User.findById(decodedToken.id)
+    // muokkaa s.e myös admin että commentin luoja voi muokata
     if(!modifying_user) {
       throw('error: something wrong with token, modifying user not found')
       //return response.status(400).json({error: 'something wrong with token, user not found'})
@@ -175,7 +176,9 @@ commentRouter.delete('/api/comments/:id', async (request, response, next) => {
       }
       const user = await User.findById(decodedToken.id)
       console.log("admin user ", user.userType)
-      if(user.userType !== "admin") {
+
+      // vaihda tähän että myös user joka luonut voi poistaa
+      if(user.userType !== "admin" ) {
           return response.status(401).json({ error: 'unauthorized admin delete operation'})
       }
 

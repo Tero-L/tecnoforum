@@ -131,7 +131,10 @@ userRouter.delete('/api/users/:id', async (request, response, next) => {
             await User.findByIdAndRemove(request.params.id, function(err,res){
                 if(err) throw ('error: user to be removed not found')
                 if(!res && !err) response.status(401).json({error: 'user to be removed not found'})
-                else response.status(204).end() //json({message: 'success'}) //(`message: user ${request.params.id} removed`) // msg not               
+                else {
+                    // update commnents, threads with user Id -1 tai jotain
+                    response.status(204).end() //json({message: 'success'}) //(`message: user ${request.params.id} removed`) // msg not               
+                }
             })
         } else {
             //return response.status(401).json({ error: 'unauthorized admin delete operation'})

@@ -117,4 +117,7 @@ categoryRouter.put('/api/categories', async (request, response, next) => {
     }
   })
   
+// category delete by admin only, remove its threads and all comments below it
+// check howto update users comments fields where threads and comments removed
+
 module.exports = categoryRouter
