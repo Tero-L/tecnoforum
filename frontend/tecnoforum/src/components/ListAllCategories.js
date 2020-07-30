@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react';
 import { withRouter } from 'react-router-dom';
-import { makeStyles, Paper, TableContainer, Table, TableBody, TableRow, TableHead, TableCell } from '@material-ui/core';
+import { makeStyles, TableContainer, Table, TableBody, TableRow, TableHead, TableCell } from '@material-ui/core';
 
 import { CategoryRow } from './CategoryRow';
 // import Spinner from './Spinner';

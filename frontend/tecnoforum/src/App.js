@@ -6,6 +6,7 @@ import { Container } from '@material-ui/core';
 import { useStateValue } from './utils/StateProvider';
 import NavBar from './components/NavBar';
 import ListAllCategories from './components/ListAllCategories';
+import ViewCategory from './components/ViewCategory';
 
 const App = ({ history, match }) => {
 	const [{login}] = useStateValue();
@@ -13,8 +14,10 @@ const App = ({ history, match }) => {
 	return (
 		<React.Fragment>
 			<NavBar/>
-			<Container maxWidth="lg" style={{ 'paddingTop': '100px' }}>
+			<Container maxWidth="lg" style={{ 'paddingTop': '80px' }}>
 				<Switch>
+					<Route exact path='/c/:id' render={({match}) => <ViewCategory id={match.params.id} history={history} />} />
+					<Route exact path='/c/:id/page-:page' render={({match}) => <ViewCategory id={match.params.id} page={match.params.page} history={history} />} />
 					<Route render={() => <ListAllCategories/>} />
 				</Switch>
 			{/* <Container style={{ 'paddingTop': '100px' }}>

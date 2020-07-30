@@ -1,124 +1,134 @@
-import React from 'react';
-import { connect } from 'react-redux';
+import React, {useState, useEffect} from 'react';
 import { withRouter } from 'react-router-dom';
-import { Table, Pagination, Header, Button, Icon, Breadcrumb } from 'semantic-ui-react';
+import { makeStyles, TableContainer, Table, TableBody, TableRow, TableHead, TableCell, Button } from '@material-ui/core';
+import AddBoxIcon from '@material-ui/icons/AddBox';
+import Pagination from '@material-ui/lab/Pagination';
 
-import ThreadRow from './ThreadRow';
-import Spinner from './Spinner';
+import { useStateValue } from '../utils/StateProvider';
+import { ThreadRow } from './ThreadRow';
 import { getCategory, getThreads, clearCategories } from '../actions/categoryActions';
+import { TText } from './TText';
 
-class ViewCategory extends React.Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			page: 1
-		};
+const useStyles = makeStyles((theme) => ({
+	header: {
+		paddingTop: "20px",
+		paddingBottom: "10px"
+	},
+	bottomHeader: {
+		borderBottom: `0px solid ${theme.palette.divider}`,
+		paddingTop: "10px",
+		paddingBottom: "30px",
+		padding: "0px"
+	},
+	bottomButtonHeader: {
+		borderBottom: `0px solid ${theme.palette.divider}`,
+		paddingTop: "10px",
+		paddingBottom: "30px",
+		padding: "0px",
+		textAlign: "end"
+	},
+	tableCellCollapse: {
+		width: "1px"
 	}
+}));
 
-	componentDidMount () {
-		let state = {};
-		state.page = this.props.page ? this.props.page : 1;
-		this.props.dispatch(getCategory(this.props.token, this.props.id));
-		this.props.dispatch(getThreads(this.props.token, this.props.id, state.page));
-		this.setState(state);
-	}
+const ViewCategory = (props) => {
+	const [page, setPage] = useState(1);
 
-	componentWillUnmount () {
-		this.props.dispatch(clearCategories());
-	}
+	useEffect(() => {
+		if ( props.page )
+			setPage(parseInt(props.page));
+	}, []);
 
-	onClickThread = (event) => {
+	const [{login, category}, dispatch] = useStateValue();
+
+	useEffect(() => {
+		getCategory(dispatch, login.token, props.id);
+		getThreads(dispatch, login.token, props.id, page);
+		return () => dispatch(clearCategories());
+	}, []);
+
+	const onClickThread = (event) => {
 		event.preventDefault();
-		this.props.history.push(`/t/${event.target.id}`);
+		props.history.push(`/t/${event.target.id}`);
 	};
 
-	onClickUser = (event) => {
+	const onClickUser = (event) => {
 		event.preventDefault();
 		
 	};
 
-	onClickBreadcrum = (event) => {
+	const onClickBreadcrum = (event) => {
 		event.preventDefault();
-		this.props.history.push(event.target.getAttribute("href"));
+		props.history.push(event.target.getAttribute("href"));
 	}
 
-	handlePaginationChange = (e, { activePage }) => {
-		this.props.history.replace(`/c/${this.props.id}/page-${activePage}`);
-		this.props.dispatch(getThreads(this.props.token, this.props.id, activePage));
-		let state = {};
-		state.page = activePage;
-		this.setState(state);
+	const handlePaginationChange = (e, p) => {
+		props.history.replace(`/c/${props.id}/page-${p}`);
+		getThreads(dispatch, login.token, props.id, p);
+		setPage(p);
 	}
 
-	render() {
-		const isLoading = this.props.loading && <Spinner />;
-		let threads = this.props.threads && this.props.threads.docs.map((thread) => {
-			return <ThreadRow key={thread.id} item={thread} onClickThread={this.onClickThread} onClickUser={this.onClickUser} />;
-		});
-		let name = this.props.category ? this.props.category.categoryName : "Category";
-		let pagination = this.props.threads && <Pagination size='mini'
-			defaultActivePage={this.state.page}
-			totalPages={this.props.threads.pages}
-			onPageChange={this.handlePaginationChange} />
-   		return (
-			<div>
-				{isLoading}
-				<Breadcrumb size='tiny'>
-					<Breadcrumb.Section href={`/`} onClick={this.onClickBreadcrum}>Home</Breadcrumb.Section>
-					<Breadcrumb.Divider />
-					<Breadcrumb.Section active>{name}</Breadcrumb.Section>
-				</Breadcrumb>
-				<Table basic='very'>
-					<Table.Body>
-						<Table.Row>
-							<Table.Cell>
-								<Header as='h1'>{name}</Header>
-							</Table.Cell>
-						</Table.Row>
-						<Table.Row>
-							<Table.Cell>
+	const classes = useStyles();
+	const name = category.category ? category.category.categoryName : "Category";
+	const pagination = category.threads && <Pagination shape="rounded"
+		page={page}
+		count={category.threads.pages}
+		onChange={handlePaginationChange} />
+	const threads = category.threads && category.threads.docs.map((thread) => {
+		return <ThreadRow key={thread.id} item={thread} onClickThread={onClickThread} onClickUser={onClickUser} />;
+	});
+	console.log("did this rerender?");
+	return (
+		<React.Fragment>
+			<TText v="caption"><a href={`/`} onClick={onClickBreadcrum}>Home</a> / {name}</TText>
+			<TableContainer>
+				<Table>
+					<TableBody>
+						<TableRow>
+							<TableCell className={classes.header} padding="none">
+								<TText v="h4">{name}</TText>
+							</TableCell>
+							<TableCell/>
+						</TableRow>
+						<TableRow>
+							<TableCell className={classes.bottomHeader}>
 								{pagination}
-							</Table.Cell>
-							<Table.Cell collapsing>
-								<Button 
-									disabled={!this.props.isLogged} 
-									icon 
-									labelPosition='right' 
-									onClick={() => this.props.history.push(`/c/${this.props.id}/new-thread/`)}>
-										New Thread 
-										<Icon name="plus" />
+							</TableCell>
+							<TableCell className={classes.bottomButtonHeader}>
+								 <Button 
+									variant="contained" 
+									disableElevation 
+									endIcon={<AddBoxIcon />}
+									disabled={!login.isLogged}
+									onClick={() => props.history.push(`/c/${props.id}/new-thread/`)}>
+									New Thread 
 								</Button>
-							</Table.Cell>
-						</Table.Row>
-					</Table.Body>
+							</TableCell>
+						</TableRow>
+					</TableBody>
 				</Table>
-				<Table basic='very' striped>
-					<Table.Header>
-						<Table.Row>
-						<Table.HeaderCell>Thread</Table.HeaderCell>
-						<Table.HeaderCell textAlign='right' collapsing>Replies</Table.HeaderCell>
-						<Table.HeaderCell textAlign='right' collapsing>Views</Table.HeaderCell>
-						</Table.Row>
-					</Table.Header>
-					<Table.Body>{threads}</Table.Body>
+				<Table size="small">
+					<TableHead>
+						<TableRow>
+							<TableCell>
+								Thread
+							</TableCell>
+							<TableCell align="center" className={classes.tableCellCollapse}>
+								Replies
+							</TableCell>
+							<TableCell align="center" className={classes.tableCellCollapse}>
+								Views
+							</TableCell>
+						</TableRow>
+					</TableHead>
+					<TableBody>
+						{threads}
+					</TableBody>
 				</Table>
-			</div>
-    	);
-	}
+			</TableContainer>
+		</React.Fragment>
+	);
 }
 
-const mapStateToProps = (state) => {
-	return {
-	  isLogged: state.login.isLogged,
-	  loading: state.login.loading,
-	  token: state.login.token,
-	  category: state.category.category,
-	  threads: state.category.threads
-	};
-};
-  
-const mapDispatchToProps = (dispatch) => ({
-	dispatch
-});
-  
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(ViewCategory));
+export default withRouter(ViewCategory);

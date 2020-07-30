@@ -54,7 +54,7 @@ export const getCategories = (dispatch, token) => {
 	});
 };
 
-export const getCategory = (dispatch, token, id, loadThreads = true) => {
+export const getCategory = (dispatch, token, id) => {
 	let request = {
 		method: 'GET',
 		mode: 'cors',
@@ -66,25 +66,25 @@ export const getCategory = (dispatch, token, id, loadThreads = true) => {
 		//	 dispatch(endLoading());
 		if (response.ok) {
 			response.json().then((data) => {
-				dispatch(fetchCategoryThreadsSuccess(data));
+				dispatch(fetchCategorySuccess(data));
 			}).catch((error) => {
-				dispatch(fetchCategoryThreadsFailed(`Failed to parse data. Try again error ${error}`));
+				dispatch(fetchCategoryFailed(`Failed to parse data. Try again error ${error}`));
 			});
 		} else {
 			if (response.status === 403) {
-				dispatch(fetchCategoryThreadsFailed('Server responded with a session failure. Logging out!'));
+				dispatch(fetchCategoryFailed('Server responded with a session failure. Logging out!'));
 				dispatch(logoutSuccess());
 			} else {
 				response.json().then((data) => {
-					dispatch(fetchCategoryThreadsFailed(`Server responded with status: ${data.error}`));
+					dispatch(fetchCategoryFailed(`Server responded with status: ${data.error}`));
 				}).catch((error) => {
-					dispatch(fetchCategoryThreadsFailed(`Server responded with status: ${response.status}`));
+					dispatch(fetchCategoryFailed(`Server responded with status: ${response.status}`));
 				});
 			}
 		}
 	}).catch((error) => {
 		//dispatch(endLoading());
-		dispatch(fetchCategoryThreadsFailed(`Server responded with an error: ${error}`));
+		dispatch(fetchCategoryFailed(`Server responded with an error: ${error}`));
 	});
 };
 
@@ -97,25 +97,25 @@ export const getThreads = (dispatch, token, id, page) => {
 	let url = `/api/threads/pages?page=${page}&limit=5&category_id=${id}`;
 	// dispatch(loading());
 	fetch(url, request).then((response) => {
-			// dispatch(endLoading());
-			if (response.ok) {
-				response.json().then((data) => {
-					dispatch(fetchThreadsSuccess(data));
-				}).catch((error) => {
-					dispatch(fetchThreadsFailed(`Failed to parse data. Try again error ${error}`));
-				});
+		// dispatch(endLoading());
+		if (response.ok) {
+			response.json().then((data) => {
+				dispatch(fetchThreadsSuccess(data));
+			}).catch((error) => {
+				dispatch(fetchThreadsFailed(`Failed to parse data. Try again error ${error}`));
+			});
+		} else {
+			if (response.status === 403) {
+				dispatch(fetchThreadsFailed('Server responded with a session failure. Logging out!'));
+				dispatch(logoutSuccess());
 			} else {
-				if (response.status === 403) {
-					dispatch(fetchThreadsFailed('Server responded with a session failure. Logging out!'));
-					dispatch(logoutSuccess());
-				} else {
-					response.json().then((data) => {
-						dispatch(fetchThreadsFailed(`Server responded with status: ${data.error}`));
-					}).catch((error) => {
-						dispatch(fetchThreadsFailed(`Server responded with status: ${response.status}`));
-					});
-				}
+				response.json().then((data) => {
+					dispatch(fetchThreadsFailed(`Server responded with status: ${data.error}`));
+				}).catch((error) => {
+					dispatch(fetchThreadsFailed(`Server responded with status: ${response.status}`));
+				});
 			}
+		}
 	}).catch((error) => {
 		// dispatch(endLoading());
 		dispatch(fetchThreadsFailed(`Server responded with an error: ${error}`));
@@ -175,14 +175,14 @@ export const fetchCategoriesFailed = (error) => {
 	};
 };
 
-export const fetchCategoryThreadsSuccess = (category) => {
+export const fetchCategorySuccess = (category) => {
 	return {
 		type: FETCH_CATEGORY_SUCCESS,
 		category: category,
 	};
 };
 	
-export const fetchCategoryThreadsFailed = (error) => {
+export const fetchCategoryFailed = (error) => {
 	return {
 		type: FETCH_CATEGORY_FAILED,
 		error: error,
