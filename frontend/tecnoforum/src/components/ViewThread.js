@@ -138,7 +138,7 @@ const ViewThread = (props) => {
 									disableElevation 
 									endIcon={<AddBoxIcon />}
 										disabled={!login.isLogged}
-									onClick={() => props.history.push(`/c/${props.id}/new-thread/`)}>
+									onClick={() => props.history.push(`/t/${props.id}/new-comment/`)}>
 									New Comment 
 								</Button>
 							</TableCell>

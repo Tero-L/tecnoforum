@@ -10,6 +10,7 @@ import ViewCategory from './components/ViewCategory';
 import ViewThread from './components/ViewThread';
 import NewThread from './components/NewThread';
 import EditThread from './components/EditThread';
+import NewComment from './components/NewComment';
 
 const App = ({ history, match }) => {
 	const [{login}] = useStateValue();
@@ -25,6 +26,7 @@ const App = ({ history, match }) => {
 					<Route exact path='/t/:id' render={({match}) => <ViewThread id={match.params.id} />} />
 					<Route exact path='/t/:id/page-:page' render={({match}) => <ViewThread id={match.params.id} page={match.params.page} />} />
 					<Route exact path='/t/:id/edit-thread' render={({match}) => (!login.isLogged ? <Redirect to='/' /> : <EditThread id={match.params.id} />)} />
+					<Route exact path='/t/:id/new-comment' render={({match}) => (!login.isLogged ? <Redirect to='/' /> : <NewComment id={match.params.id} history={history} />)} />
 					<Route render={() => <ListAllCategories/>} />
 				</Switch>
 				{/* 
