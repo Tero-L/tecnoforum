@@ -61,13 +61,13 @@ const EditThread = (props) => {
 			return;
 		}
 		
-		const thread = {
+		const t = {
 			threadName: form.title,
 			description: form.comment,
-			categoryName: category.category.categoryName
+			id: thread.thread.id
 		}
 
-		editThread(dispatch, login.token, thread, props.history);
+		editThread(dispatch, login.token, t, props.history);
 	};
 
 	const categoryName = category.category ? category.category.categoryName : "Category";
