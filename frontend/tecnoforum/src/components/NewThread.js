@@ -50,7 +50,7 @@ const NewThread = (props) => {
 			return;
 		}
 		
-		let thread = {
+		const thread = {
 			threadName: form.title,
 			description: form.comment,
 			categoryName: category.category.categoryName

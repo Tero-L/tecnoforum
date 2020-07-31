@@ -1,55 +1,55 @@
-import React from 'react';
-import { connect } from 'react-redux';
+import React, {useState, useEffect} from 'react';
 import { withRouter } from 'react-router-dom';
 
-import Spinner from './Spinner';
-import { getThread, editThread } from '../actions/threadActions';
+import { editThread, getThread } from '../actions/threadActions';
+import { useStateValue } from '../utils/StateProvider';
 import ThreadForm from './ThreadForm';
 
-class EditThread extends React.Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			title: '',
-			comment: '',
-			titleFail: false,
-			commentFail: false,
-			threadLoaded: false
-		};
-	}
+const EditThread = (props) => {
+	const [{login, category, thread}, dispatch] = useStateValue();
+	const [form, setForm] = useState({
+		title: '',
+		comment: '',
+		titleFail: false,
+		commentFail: false,
+		threadLoaded: false,
+		loadingthread: false
+	});
 
-	componentDidMount () {
-		this.props.dispatch(getThread(this.props.token, this.props.id, true));
-	}
-
-	componentDidUpdate(prevProps) {
-		if (this.props.thread !== prevProps.thread && this.props.thread !== null && this.state.threadLoaded === false) {
-			let state = {};
+	useEffect(() => {
+		if (thread.thread !== null && form.threadLoaded === false) {
+			let state = {...form};
 			state.threadLoaded = true;
-			state.title = this.props.thread.threadName;
-			state.comment = this.props.thread.description;
-			this.setState(state);
+			state.title = thread.thread.threadName;
+			state.comment = thread.thread.description;
+			setForm(state);
 		}
-	}
+	}, [thread.thread, form.loadingthread]);
 
-	onChange = (event) => {
-		let state = {};
-		state[event.target.name] = event.target.value;
-		state[`${event.target.name}Fail`] = false;
-		this.setState(state);
+	useEffect(() => {
+		getThread(dispatch, login.token, props.id, true);
+		setForm({...form, loadingthread:true});
+	}, []);
+
+	const onChange = (event) => {
+		setForm({
+			...form,
+			[event.target.name]: event.target.value,
+			[`${event.target.name}Fail`]: false
+		})
 	};
 
-	onSubmit = (event) => {
+	const onSubmit = (event) => {
 		event.preventDefault();
-		let state = {};
+		let state = {...form};
 		let errors = false;
 
-		if (this.state.title.length === 0 || this.state.title.length < 4 )
+		if (form.title.length === 0 || form.title.length < 4 )
 		{
 			state.titleFail = true;
 			errors = true;
 		}
-		if (this.state.comment.length === 0)
+		if (form.comment.length === 0)
 		{
 			state.commentFail = true;
 			errors = true;
@@ -57,53 +57,36 @@ class EditThread extends React.Component {
 		
 		if (errors)
 		{
-			this.setState(state);
+			setForm(state);
 			return;
 		}
 		
-		let thread = {
-			threadName: this.state.title,
-			description: this.state.comment,
-			id: this.props.thread.id
+		const thread = {
+			threadName: form.title,
+			description: form.comment,
+			categoryName: category.category.categoryName
 		}
 
-		this.props.dispatch(editThread(this.props.token, thread, this.props.history));
+		editThread(dispatch, login.token, thread, props.history);
 	};
 
-	render() {
-		const isLoading = this.props.loading && <Spinner />;
-		let categoryName = this.props.category ? this.props.category.categoryName : "Category";
-		return (
-			<>
-				{isLoading}
-				{this.state.threadLoaded && <ThreadForm 
-					id={this.props.category.id} 
-					thread_id={this.props.thread.id}
-					categoryName={categoryName}
-					header="Edit Thread" 
-					onChange={this.onChange} 
-					onSubmit={this.onSubmit} 
-					state={{...this.state}} 
-					editThread={true}
-					history={this.props.history} />
-				}
-			</>
-		);
-	}
+	const categoryName = category.category ? category.category.categoryName : "Category";
+	console.log("did this rerender?");
+	return (
+		<React.Fragment>
+			{form.threadLoaded && <ThreadForm 
+				id={category.category.id} 
+				thread_id={thread.thread.id}
+				categoryName={categoryName}
+				header="Edit Thread" 
+				onChange={onChange} 
+				onSubmit={onSubmit} 
+				form={{...form}} 
+				editThread={true}
+				history={props.history} />
+			}
+		</React.Fragment>
+	);
 }
 
-const mapStateToProps = (state) => {
-	return {
-		token: state.login.token,
-		category: state.category.category,
-		thread: state.thread.thread,
-		loading: state.register.loading,
-		error: state.thread.error
-	};
-};
-
-const mapDispatchToProps = (dispatch) => ({
-	dispatch
-});
-
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(EditThread));
+export default withRouter(EditThread);

@@ -49,7 +49,7 @@ export default function ThreadForm (props) {
 						onChange={props.onChange} value={title}/><br/>
 						{commentFail && <Alert severity="error" className={classes.alert}>Comment must not be empty</Alert>}
 						<TextField label="Comment" name="comment" required variant="outlined" className={classes.textField}
-						onChange={props.onChange} multiline={true} rows={12}>{comment}</TextField>
+						onChange={props.onChange} multiline={true} rows={12} value={comment}>{comment}</TextField>
 					</form>
 					<Button variant="contained" onClick={props.onSubmit} disableElevation>Submit</Button>
 				</Paper>

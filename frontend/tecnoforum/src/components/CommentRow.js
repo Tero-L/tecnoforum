@@ -54,7 +54,7 @@ const CommentRow = (props) =>
 	const tUrl = `/t/${thread_id}/`;
 	const editAndRemove = !( login.isLogged && ( login.user.userType === "admin" || login.user.id === user_id ) ) ? "" : 
 	(
-		isThread ? 
+		!isThread ? 
 		<React.Fragment><a href="">Remove</a> / <a href={`${tUrl}edit-comment/${id}`} onClick={props.onClickCommentModify}>Edit</a> /</React.Fragment> :
 		<React.Fragment><a href="">Remove</a> / <a href={`${tUrl}edit-thread`} onClick={props.onClickCommentModify}>Edit</a> /</React.Fragment>
 	);
