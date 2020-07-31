@@ -23,21 +23,24 @@ const StyledTableRow = withStyles((theme) => ({
 }))(TableRow);
 
 const useStyles = makeStyles((theme) => ({
-	category: {
-		"color": "inherit",
+	categoryLink: {
+		color: "inherit",
 		"text-decoration": "none", 
 		"&:hover":{
 			"color": "blue"
 		}
 	},
-	thread: {
+	threadLink: {
 		"text-decoration": "none",
 		maxWidth: "300px",
 		overflow: "hidden",
 		textOverflow: "ellipsis"
 	},
-	description: {
-		maxWidth: "600px"
+	threadCount: {
+		width: "1px"
+	},
+	category: {
+		width: "50%"
 	}
 }));
 
@@ -47,21 +50,21 @@ export const CategoryRow = (props) => {
 	const latestThreads = latest && latest.map((thread) => {
 		return (
 			<React.Fragment key={thread.id}>
-				<TText v="button"><a className={classes.thread} href={`/t/${thread.id}`} onClick={props.onClick}>{thread.threadName}</a></TText>
-				<TText v="caption"><a className={classes.thread} href={`/u/${thread.user_id}`} onClick={props.onClick}>{thread.author}</a> / {thread.lastModified}</TText>
+				<TText v="button"><a className={classes.threadLink} href={`/t/${thread.id}`} onClick={props.onClick}>{thread.threadName}</a></TText>
+				<TText v="caption"><a className={classes.threadLink} href={`/u/${thread.user_id}`} onClick={props.onClick}>{thread.author}</a> / {thread.lastModified}</TText>
 			</React.Fragment>
 		);
 	});
     return (
 		<StyledTableRow>
-			<StyledTableCell size="small" component="th" scope="row">
-				<TText v="h6"><a className={classes.category} href={`/c/${id}`} onClick={props.onClick}>{categoryName}</a></TText>
-				<TText v="caption" c="span"><div className={classes.description}>{description}</div></TText>
+			<StyledTableCell component="th" scope="row" className={classes.category}>
+				<TText v="h6"><a className={classes.categoryLink} href={`/c/${id}`} onClick={props.onClick}>{categoryName}</a></TText>
+				<TText v="caption" c="span">{description}</TText>
 			</StyledTableCell>
-			<StyledTableCell size="small" align="center">
+			<StyledTableCell align="right" className={classes.threadCount}>
 				{threads ? threads.length : 0}
 			</StyledTableCell>
-			<StyledTableCell size="small">
+			<StyledTableCell>
 				{latestThreads}
 			</StyledTableCell>
 		</StyledTableRow>

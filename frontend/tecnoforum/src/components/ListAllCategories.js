@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react';
 import { withRouter } from 'react-router-dom';
-import { makeStyles, TableContainer, Table, TableBody, TableRow, TableHead, TableCell } from '@material-ui/core';
+import { TableContainer, Table, TableBody, TableRow, TableHead, TableCell } from '@material-ui/core';
 
 import { CategoryRow } from './CategoryRow';
 // import Spinner from './Spinner';
@@ -26,12 +26,12 @@ const ListAllCategories = (props) => {
 	return (
 		<React.Fragment>
 			<TableContainer>
-				<Table aria-label="simple table">
+				<Table size="small" aria-label="simple table">
 					<TableHead>
 						<TableRow>
-							<TableCell size="small">Category</TableCell>
-							<TableCell size="small" align="center">Threads</TableCell>
-							<TableCell size="small">Latests</TableCell>
+							<TableCell>Category</TableCell>
+							<TableCell align="right" style={{width:"1px"}}>Threads</TableCell>
+							<TableCell>Latests</TableCell>
 						</TableRow>
 					</TableHead>
 					<TableBody>

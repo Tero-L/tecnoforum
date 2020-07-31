@@ -10,12 +10,14 @@ import { useStateValue } from '../utils/StateProvider';
 
 const useStyles = makeStyles((theme) => ({
 	toolbar: {
+		'z-index': '1',
 		backgroundColor: `white`,
 		borderBottom: `1px solid ${theme.palette.divider}`,
 		position: 'fixed',
 		width: `auto`,
-		left:`40px`,
-		right:`40px`,
+		left: `40px`,
+		right: `40px`,
+		top: `0px`
 	},
 	ButtonGroup: {
 		'position': 'absolute', 

@@ -7,6 +7,8 @@ import { useStateValue } from './utils/StateProvider';
 import NavBar from './components/NavBar';
 import ListAllCategories from './components/ListAllCategories';
 import ViewCategory from './components/ViewCategory';
+import ViewThread from './components/ViewThread';
+// import NewThread from './components/NewThread';
 
 const App = ({ history, match }) => {
 	const [{login}] = useStateValue();
@@ -14,10 +16,13 @@ const App = ({ history, match }) => {
 	return (
 		<React.Fragment>
 			<NavBar/>
-			<Container maxWidth="lg" style={{ 'paddingTop': '80px' }}>
+			<Container maxWidth="lg" style={{ 'paddingTop': '70px' }}>
 				<Switch>
-					<Route exact path='/c/:id' render={({match}) => <ViewCategory id={match.params.id} history={history} />} />
-					<Route exact path='/c/:id/page-:page' render={({match}) => <ViewCategory id={match.params.id} page={match.params.page} history={history} />} />
+					<Route exact path='/c/:id' render={({match}) => <ViewCategory id={match.params.id} />} />
+					<Route exact path='/c/:id/page-:page' render={({match}) => <ViewCategory id={match.params.id} page={match.params.page} />} />
+					{/* <Route exact path='/c/:id/new-thread' render={({match}) => <NewThread id={match.params.id} />} /> */}
+					<Route exact path='/t/:id' render={({match}) => <ViewThread id={match.params.id} />} />
+					<Route exact path='/t/:id/page-:page' render={({match}) => <ViewThread id={match.params.id} page={match.params.page} />} />
 					<Route render={() => <ListAllCategories/>} />
 				</Switch>
 			{/* <Container style={{ 'paddingTop': '100px' }}>

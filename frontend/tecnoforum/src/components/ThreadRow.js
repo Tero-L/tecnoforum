@@ -54,10 +54,10 @@ export const ThreadRow = (props) => {
 					<a href="" id={user_id} onClick={props.onClickUser}>{author}</a> / {date}
 				</TText>
 			</StyledTableCell>
-			<StyledTableCell align="center" className={classes.tableCellCollapse}>
+			<StyledTableCell align="right" className={classes.tableCellCollapse}>
 				{comments ? comments.length : 0}
 			</StyledTableCell>
-			<StyledTableCell align="center" className={classes.tableCellCollapse}>
+			<StyledTableCell align="right" className={classes.tableCellCollapse}>
 				0
 			</StyledTableCell>
 		</StyledTableRow>

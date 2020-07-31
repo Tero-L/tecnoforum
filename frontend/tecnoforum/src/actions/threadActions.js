@@ -98,7 +98,7 @@ export const getComments = (dispatch, token, id, page) => {
 		mode: 'cors',
 		headers: { 'Content-type': 'application/json', Authorization: `bearer ${token}` },
 	};
-	let url = `/api/comments/pages?page=${page}&limit=5&thread_id=${id}`;
+	let url = `/api/comments/pages?page=${page}&limit=10&thread_id=${id}`;
 	//dispatch(loading());
 		fetch(url, request).then((response) => {
 		//dispatch(endLoading());

@@ -34,17 +34,13 @@ const useStyles = makeStyles((theme) => ({
 
 const ViewCategory = (props) => {
 	const [page, setPage] = useState(1);
-
-	useEffect(() => {
-		if ( props.page )
-			setPage(parseInt(props.page));
-	}, []);
-
 	const [{login, category}, dispatch] = useStateValue();
 
 	useEffect(() => {
+		let p = props.page ? parseInt(props.page) : page;
 		getCategory(dispatch, login.token, props.id);
-		getThreads(dispatch, login.token, props.id, page);
+		getThreads(dispatch, login.token, props.id, p);
+		setPage(p);
 		return () => dispatch(clearCategories());
 	}, []);
 
@@ -114,10 +110,10 @@ const ViewCategory = (props) => {
 							<TableCell>
 								Thread
 							</TableCell>
-							<TableCell align="center" className={classes.tableCellCollapse}>
+							<TableCell align="right" className={classes.tableCellCollapse}>
 								Replies
 							</TableCell>
-							<TableCell align="center" className={classes.tableCellCollapse}>
+							<TableCell align="right" className={classes.tableCellCollapse}>
 								Views
 							</TableCell>
 						</TableRow>
