@@ -59,7 +59,7 @@ const CommentRow = (props) =>
 		<React.Fragment><a href="">Remove</a> / <a href={`${tUrl}edit-thread`} onClick={props.onClickCommentModify}>Edit</a> /</React.Fragment>
 	);
 	const classes = useStyles();
-	console.log("did this render?");
+	console.log("did this rerender?");
 	return (
 		<Paper variant="outlined" className={classes.root}>
 			<Table>

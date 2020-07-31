@@ -140,7 +140,7 @@ const Login = (props) => {
 					<center className={classes.content}>
 						<TabPanel value={tab} index={0}>
 							{registerSuccess || registerFail}
-							<form>
+							<form onSubmit={props.onRegisterSubmit}>
 								<TextField label="Email" name="username" type="email" required variant="outlined" 
 									className={classes.input} onChange={onChange}/>
 								<br/>
@@ -155,7 +155,7 @@ const Login = (props) => {
 						</TabPanel>
 						<TabPanel value={tab} index={1}>
 							{loginFail}
-							<form>
+							<form onSubmit={props.onLoginSubmit}>
 								<TextField label="Email" name="username" type="email" required variant="outlined" 
 									className={classes.input} onChange={onChange}/>
 								<br/>

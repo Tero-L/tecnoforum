@@ -1,48 +1,59 @@
 import React from 'react';
-import { Header, Breadcrumb, Form, Segment, Button } from 'semantic-ui-react';
+import { makeStyles, TextField, Button, Paper, Box } from '@material-ui/core';
+import Alert from '@material-ui/lab/Alert';
 
-import FieldError from './FieldError';
+import { TText } from './TText';
 
-export default class ThreadForm extends React.Component {
-	onClickBreadcrum = (event) => {
+const useStyles = makeStyles((theme) => ({
+	root: {
+		paddingTop: "20px"
+	},
+	paper: {
+		marginTop: "10px",
+		padding: "10px",
+		marginBottom:"14px",
+		border: `1px solid ${theme.palette.divider}`,
+		WebkitBoxShadow: `0 1px 2px 0 rgba(34,36,38,.15)`,
+		boxShadow: `0 1px 2px 0 rgba(34,36,38,.15)`
+	},
+	textField: {
+		paddingBottom: '10px',
+		width: '100%'
+	},
+	alert: {
+		marginBottom: '10px',
+	}
+}));
+
+export default function ThreadForm (props) {
+	const onClickBreadcrum = (event) => {
 		event.preventDefault();
-		this.props.history.push(event.target.getAttribute("href"));
+		props.history.push(event.target.getAttribute("href"));
 	}
 
-	render() {
-		const { titleFail, commentFail, title, comment } = this.props.state;
-		return (
-			<div>
-				<Header as='h2'>{this.props.header}</Header>
-				<Breadcrumb size='tiny'>
-					<Breadcrumb.Section href={`/`} onClick={this.onClickBreadcrum}>Home</Breadcrumb.Section>
-					<Breadcrumb.Divider />
-					<Breadcrumb.Section href={`/c/${this.props.id}`} onClick={this.onClickBreadcrum}>{this.props.categoryName}</Breadcrumb.Section>
-					<Breadcrumb.Divider />
-					{this.props.editThread &&
-						<React.Fragment>
-							<Breadcrumb.Section href={`/t/${this.props.thread_id}`} onClick={this.onClickBreadcrum} content={title} />
-							<Breadcrumb.Divider />
-						</React.Fragment>}
-					<Breadcrumb.Section active>{this.props.header}</Breadcrumb.Section>
-				</Breadcrumb>
-				<Segment>
-					<Form>
-						<Form.Field>
-							<label>Title</label>
-							<input name='title' placeholder='Title' value={title} onChange={this.props.onChange} />
-							{titleFail && <FieldError error="Title must not be empty or less than 4 letters" />}
-						</Form.Field>
-						<Form.Field>
-							<label>Comment</label>
-							<textarea name='comment' placeholder='Comment' value={comment} onChange={this.props.onChange} />
-							{commentFail && <FieldError error="Comment must not be empty" />}
-						</Form.Field>
-						<Button content='Submit' onClick={this.props.onSubmit} />
-						<Button content='Preview' />
-					</Form>
-				</Segment>
-			</div>
-		);
-	}
+	const classes = useStyles();
+	const { titleFail, commentFail, title, comment } = props.form;
+	console.log("did this rerender?");
+	return (
+		<React.Fragment>
+			<TText v="caption">
+				<a href={`/`} onClick={onClickBreadcrum}>Home</a> / <a href={`/c/${props.id}`} onClick={onClickBreadcrum}>{props.categoryName}</a>
+				{props.editThread && <React.Fragment>{" / "}<a href={`/t/${props.thread_id}`} onClick={onClickBreadcrum}>{title}</a></React.Fragment>} / {props.header}
+			</TText>
+			<Box className={classes.root}>
+				<TText v="h4">{props.header}</TText>
+				<Paper className={classes.paper}>
+					<form onSubmit={props.onSubmit}>
+						{titleFail && <Alert severity="error" className={classes.alert}>Title must not be empty or less than 4 letters</Alert>}
+						<TextField label="Title" name="title" required variant="outlined" className={classes.textField}
+						onChange={props.onChange} value={title}/><br/>
+						{commentFail && <Alert severity="error" className={classes.alert}>Comment must not be empty</Alert>}
+						<TextField label="Comment" name="comment" required variant="outlined" className={classes.textField}
+						onChange={props.onChange} multiline={true} rows={12}>{comment}</TextField>
+					</form>
+					<Button variant="contained" onClick={props.onSubmit} disableElevation>Submit</Button>
+				</Paper>
+			</Box>
+		</React.Fragment>
+	);
 }

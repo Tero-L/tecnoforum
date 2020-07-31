@@ -8,7 +8,7 @@ import NavBar from './components/NavBar';
 import ListAllCategories from './components/ListAllCategories';
 import ViewCategory from './components/ViewCategory';
 import ViewThread from './components/ViewThread';
-// import NewThread from './components/NewThread';
+import NewThread from './components/NewThread';
 
 const App = ({ history, match }) => {
 	const [{login}] = useStateValue();
@@ -20,7 +20,7 @@ const App = ({ history, match }) => {
 				<Switch>
 					<Route exact path='/c/:id' render={({match}) => <ViewCategory id={match.params.id} />} />
 					<Route exact path='/c/:id/page-:page' render={({match}) => <ViewCategory id={match.params.id} page={match.params.page} />} />
-					{/* <Route exact path='/c/:id/new-thread' render={({match}) => <NewThread id={match.params.id} />} /> */}
+					<Route exact path='/c/:id/new-thread' render={({match}) => (!login.isLogged ? <Redirect to='/' /> : <NewThread id={match.params.id} />)} />
 					<Route exact path='/t/:id' render={({match}) => <ViewThread id={match.params.id} />} />
 					<Route exact path='/t/:id/page-:page' render={({match}) => <ViewThread id={match.params.id} page={match.params.page} />} />
 					<Route render={() => <ListAllCategories/>} />
