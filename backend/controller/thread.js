@@ -19,14 +19,14 @@ threadRouter.get('/api/threads', (request, response,next) => {
         .catch(error => next(error))
   })
 
-  // BUG! populate not working yet
   threadRouter.get('/api/threads/pages', async (request, response, next) => {
     console.log(`/api/threads/pages pagination from page ${request.query.page} limit ${request.query.limit} for thread: ${request.query.category_id}`)
    
     const options = {
-      select: {}, // 'threadName  author date comments ', // {} jos kaikki kentät
-      sort: {date: -1}, // sort -1 lifo, +1 fifo
-      //populate: 'comments',
+      select:  {}, // 'threadName id lastModified', // {} jos kaikki kentät
+      //sort: {date: -1}, // sort -1 lifo, +1 fifo
+      sort: {lastModified: -1},
+      //populate: {path: 'date'},
       //populate: {path: 'comments'},//, model:'Comments', select: 'comments'},
       lean: true,
       page: parseInt(request.query.page,10), 
@@ -84,6 +84,8 @@ threadRouter.get('/api/threads', (request, response,next) => {
           return response.status(401).json({ error: 'token missing or invalid' })
       }
       const user = await User.findById(decodedToken.id)
+      if(!user) return response.status(401).json({error: 'user not found for the token'})
+      
       
       const category = await Category.findOne({categoryName: body.categoryName})
       if(!category) 
@@ -93,9 +95,10 @@ threadRouter.get('/api/threads', (request, response,next) => {
         category_id: category._id,
         threadName: body.threadName,
         description: body.description,
-        author: user.fullname, // vai id
+        author: user.nickname, 
         user_id: user._id,
-        date: new Date()
+        date: new Date(),
+        lastModified: new Date 
       })
     
       const savedThread = await thread.save()
@@ -157,4 +160,10 @@ threadRouter.put('/api/threads', async (request, response, next) => {
     }
   })
 
+  threadRouter.delete('/api/threads/:id', async (request, response, next) => {
+    // find the thread by its Id, delete itself and if ok then its comments and remove from categories list
+    // delete by admin  or user who created it, 
+    console.log('Attemptuing to delete id: ', request.params.id)
+    return response.status(401).json({ error: 'Delete operation not implemented yet.'})
+  })
 module.exports = threadRouter

@@ -1,24 +1,18 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import thunk from 'redux-thunk';
 import { BrowserRouter } from 'react-router-dom';
-import { createStore, applyMiddleware, compose } from 'redux';
-import { Provider } from 'react-redux';
 
+import { StateProvider } from './utils/StateProvider';
+import { initialState, MainReducer } from './reducers/reducers';
 import App from './App';
-import rootReducer from './reducers/';
-
-// composeEnhancers is here for Redux devTools. Install extension in your browser
-const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
-const store = createStore(rootReducer, composeEnhancers(applyMiddleware(thunk)));
 
 ReactDOM.render(
   <React.StrictMode>
-    <Provider store={store}>
       <BrowserRouter>
-        <App />
+		<StateProvider initialState={initialState} reducer={MainReducer}>
+			<App />
+		</StateProvider>
       </BrowserRouter>
-    </Provider>
   </React.StrictMode>,
   document.getElementById('root')
 );

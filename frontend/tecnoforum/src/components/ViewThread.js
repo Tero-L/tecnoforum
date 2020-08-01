@@ -1,141 +1,154 @@
-import React from 'react';
-import { connect } from 'react-redux';
+import React, {useState, useEffect} from 'react';
 import { withRouter } from 'react-router-dom';
-import { Table, Pagination, Header, Button, Breadcrumb, Icon } from 'semantic-ui-react';
+import { makeStyles, TableContainer, Table, TableBody, TableRow, TableHead, TableCell, Button, Paper } from '@material-ui/core';
+import AddBoxIcon from '@material-ui/icons/AddBox';
+import Pagination from '@material-ui/lab/Pagination';
+import Card from '@material-ui/core/Card';
+import CardHeader from '@material-ui/core/CardHeader';
+import CardActions from '@material-ui/core/CardActions';
+import CardContent from '@material-ui/core/CardContent';
 
+import Avatar from '@material-ui/core/Avatar';
+import IconButton from '@material-ui/core/IconButton';
+import FavoriteIcon from '@material-ui/icons/Favorite';
+import ShareIcon from '@material-ui/icons/Share';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
+
+import { useStateValue } from '../utils/StateProvider';
 import CommentRow from './CommentRow';
-import Spinner from './Spinner';
 import { getThread, getComments, clearThreadAndComments } from '../actions/threadActions';
+import { TText } from './TText';
 
-class ViewThread extends React.Component {
-
-	constructor(props) {
-		super(props);
-		this.state = {
-			page: 1
-		};
+const useStyles = makeStyles((theme) => ({
+	headerTitle: {
+		padding: "0px",
+		borderBottom: `0px solid ${theme.palette.divider}`,
+		paddingTop: "20px",
+		paddingBottom: "10px",
+		whiteSpace: "nowrap"
+	},
+	headerDescription: {
+		padding: "0px",
+		whiteSpace: "pre-wrap"
+	},
+	bottomHeader: {
+		borderBottom: `0px solid ${theme.palette.divider}`,
+		paddingTop: "10px",
+		paddingBottom: "30px",
+		padding: "0px"
+	},
+	bottomButtonHeader: {
+		borderBottom: `0px solid ${theme.palette.divider}`,
+		paddingTop: "10px",
+		paddingBottom: "30px",
+		padding: "0px",
+		textAlign: "end"
+	},
+	tableCellCollapse: {
+		width: "1px"
 	}
+}));
 
-	componentDidMount () {
-		let state = {};
-		state.page = this.props.page ? this.props.page : 1;
-		this.props.dispatch(getThread(this.props.token, this.props.id, true));
-		this.props.dispatch(getComments(this.props.token, this.props.id, state.page));
-		this.setState(state);
-	}
+const ViewThread = (props) => {
+	const [page, setPage] = useState(1);
+	const [{login, category, thread}, dispatch] = useStateValue();
 
-	componentWillUnmount () {
-		this.props.dispatch(clearThreadAndComments());
-	}
+	useEffect(() => {
+		let p = props.page ? parseInt(props.page) : page;
+		getThread(dispatch, login.token, props.id, true);
+		getComments(dispatch, login.token, props.id, p);
+		setPage(parseInt(p));
+		return () => dispatch(clearThreadAndComments());
+	}, []);
 
-	onClickBreadcrum = (event) => {
+	const onClickBreadcrum = (event) => {
 		event.preventDefault();
-		this.props.history.push(event.target.getAttribute("href"));
+		props.history.push(event.target.getAttribute("href"));
 	}
 
-	onClickCommentModify = (event) => {
+	const onClickCommentModify = (event) => {
 		event.preventDefault();
-		this.props.history.push(event.target.getAttribute("href"));
+		props.history.push(event.target.getAttribute("href"));
 	}
 
-	handlePaginationChange = (e, { activePage }) => {
-		this.props.history.replace(`/t/${this.props.id}/page-${activePage}`);
-		this.props.dispatch(getComments(this.props.token, this.props.id, activePage));
-		let state = {};
-		state.page = activePage;
-		this.setState(state);
+	const handlePaginationChange = (e, p) => {
+		props.history.replace(`/t/${props.id}/page-${p}`);
+		getComments(dispatch, login.token, props.id, p);
+		setPage(p);
 	}
 
-	render() {
-		const isLoading = this.props.loading && <Spinner />;
-		let categoryLoaded = this.props.category && this.props.thread && this.props.thread.category_id === this.props.category.id;
-		let categoryID = categoryLoaded ? this.props.thread.category_id : 0;
-		let categoryName = categoryLoaded ? this.props.category.categoryName : "Category";
-		let threadName = this.props.thread ? this.props.thread.threadName : "Thread";
-		let comments = this.props.comments && this.props.comments.docs.map((comment) => {
-			return <CommentRow 
-				key={comment.id} 
-				item={comment} 
-				isLogged={this.props.isLogged} 
-				user={this.props.user} 
-				isThread={false} 
-				onClickCommentModify={this.onClickCommentModify} />;
-		});
-		let pagination = this.props.comments && <Pagination size='mini' 
-			defaultActivePage={this.state.page} 
-			totalPages={this.props.comments.pages} 
-			onPageChange={this.handlePaginationChange} />
-		let threadComment = {};
-		if ( this.props.thread ) 
-		{
-			threadComment = {
-			comment: this.props.thread.description,
-			author: this.props.thread.author,
-			thread_id: this.props.thread.id,
-			user_id: this.props.thread.user_id,
-			date: this.props.thread.date};
-		}
-		return (
-			<div>
-				{isLoading}
-				<Breadcrumb size='tiny'>
-					<Breadcrumb.Section href={`/`} onClick={this.onClickBreadcrum}>Home</Breadcrumb.Section>
-					<Breadcrumb.Divider />
-					<Breadcrumb.Section href={`/c/${categoryID}`} onClick={this.onClickBreadcrum}>{categoryName}</Breadcrumb.Section>
-					<Breadcrumb.Divider />
-					<Breadcrumb.Section active>{threadName}</Breadcrumb.Section>
-				</Breadcrumb>
-				<Table basic='very'>
-					<Table.Body>
-						<Table.Row>
-							<Table.Cell>
-								<Header as='h1'>{threadName}</Header>
-							</Table.Cell>
-						</Table.Row>
-						<Table.Row>
-							<Table.Cell>
-								{pagination}
-							</Table.Cell>
-							<Table.Cell collapsing>
-								<Button 
-									disabled={!this.props.isLogged} 
-									icon 
-									labelPosition='right' 
-									onClick={() => this.props.history.push(`/t/${this.props.id}/new-comment/`)}>
-										New Comment 
-										<Icon name="plus" />
-								</Button>
-							</Table.Cell>
-						</Table.Row>
-					</Table.Body>
+	const classes = useStyles();
+	const categoryLoaded = category.category && thread.thread && thread.thread.category_id === category.category.id;
+	const categoryID = categoryLoaded ? category.category.id : 0;
+	const categoryName = categoryLoaded ? category.category.categoryName : "Category";
+	const threadName = thread.thread ? thread.thread.threadName : "Thread";
+	const comments = thread.comments && thread.comments.docs.map((comment) => {
+		return <CommentRow 
+			key={comment.id} 
+			item={comment} 
+			isThread={false} 
+			onClickCommentModify={onClickCommentModify} />;
+	});
+	const pagination = thread.comments && <Pagination shape="rounded"
+		page={page}
+		count={thread.comments.pages}
+		onChange={handlePaginationChange} />
+	const threadComment = !thread.thread ? {} : {
+		comment: thread.thread.description,
+		author: thread.thread.author,
+		thread_id: thread.thread.id,
+		user_id: thread.thread.user_id,
+		date: thread.thread.date
+	};
+	console.log("did this render?");
+	return (
+		<React.Fragment>
+			<TText v="caption">
+				<a href={`/`} onClick={onClickBreadcrum}>Home</a> / <a href={`/c/${categoryID}`} onClick={onClickBreadcrum}>{categoryName}</a> / {threadName}
+			</TText>
+			<TableContainer>
+				<Table>
+					<TableBody>
+						<TableRow>
+							<TableCell className={classes.headerTitle}>
+								<TText v="h4">{threadName}</TText>
+							</TableCell>
+						</TableRow>
+						<TableRow>
+							<TableCell className={classes.headerDescription}>
+								<CommentRow 
+									item={threadComment} 
+									isThread={true}  
+									onClickCommentModify={onClickCommentModify} 
+								/>
+							</TableCell>
+						</TableRow>
+					</TableBody>
 				</Table>
-				{this.state.page === 1 && threadComment && 
-					<CommentRow 
-						item={threadComment} 
-						isLogged={this.props.isLogged} 
-						user={this.props.user} 
-						isThread={true}  
-						onClickCommentModify={this.onClickCommentModify} />}
-				{comments}
-			</div>
-		);
-	}
+				<Table>
+					<TableBody>
+						<TableRow>
+							<TableCell className={classes.bottomHeader}>
+								{pagination}
+							</TableCell>
+							<TableCell className={classes.bottomButtonHeader}>
+								<Button 
+									variant="contained" 
+									disableElevation 
+									endIcon={<AddBoxIcon />}
+										disabled={!login.isLogged}
+									onClick={() => props.history.push(`/t/${props.id}/new-comment/`)}>
+									New Comment 
+								</Button>
+							</TableCell>
+						</TableRow>
+					</TableBody>
+				</Table>
+			</TableContainer>
+			{comments}
+		</React.Fragment>
+	);
 }
 
-const mapStateToProps = (state) => {
-	return {
-	  isLogged: state.login.isLogged,
-	  token: state.login.token,
-	  loading: state.login.loading,
-	  user: state.login.user,
-	  category: state.category.category,
-	  thread: state.thread.thread,
-	  comments: state.thread.comments
-	};
-};
-
-const mapDispatchToProps = (dispatch) => ({
-	dispatch
-});
-  
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(ViewThread));
+export default withRouter(ViewThread);

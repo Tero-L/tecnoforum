@@ -18,40 +18,45 @@ GET http://{{HOST}}:{{PORT}}/api/users
 
 ###
 //-------------------------
-// GET A USER by name or id (change fullname/id at the end of path)
-GET http://{{HOST}}:{{PORT}}/api/users/name/Mocha Admin
+// GET A USER by name or id (change nickname/id at the end of path)
+GET http://{{HOST}}:{{PORT}}/api/users/name/"Mocha Admin"
 ###
-GET http://{{HOST}}:{{PORT}}/api/users/id/5f00b27feb4b00289857373d
+GET http://{{HOST}}:{{PORT}}/api/users/id/5f0411b42f870c4ebc46ba05
 
 ###
 //
 // POST a user, userType enum : ['user','moderator','admin']
 // default "user"
+# @name post
 POST http://{{HOST}}:{{PORT}}/api/users/
 Content-Type: application/json
 
 {
-  	"fullname": "Mocha validemail",
-  	"password": "salasanaaivanliianpitkäjottaseevoitaisiinhyväksyä",
-    "email": "mocha.testi@gmail.com",
-    "nickname": "no huh",
-    "userType": "user" 
+  	"nickname": "delete_me",
+	"email": "mocha.delete@gmail.com",
+	"userType": "user", 
+	//"nickname": "Mocha Admin",
+    //"email": "mocha.admin@gmail.com",
+    //"userType": "admin",
+	"password": "salasana" 
 }
 
 ###
+
+@id_of_last_user = {{post.response.body.id}}
+
+
 // LOGIN
 
-//@authToken = {{login.response.headers.X-AuthToken}} ei toimi, kopsaa käsin login responsesta
-@authToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik1vY2hhIEFkbWluIiwiaWQiOiI1ZjA0MTFiNDJmODcwYzRlYmM0NmJhMDUiLCJpYXQiOjE1OTQ2MjMyNTB9.D6nAS4vLd9sR-d6D_u82xqdhoWiy9_zTV1f1nSThYuM
-
-// LOGIN
-// returns fullname and token
+# @name login
 POST http://{{HOST}}:{{PORT}}/api/users/login
 Content-Type: application/json
 
 {
+	//Mocha Deplorable
+	//"email": "mocha.deplorable@gmail.com",
+	//Mocha Admin
 	"email": "mocha.admin@gmail.com",
-	//"fullname": "Mocha Admin",
   	"password": "salasana"
 	//"email": {"$gt":""}, // this injection does not work
 	//"password": {"$gt":""}
@@ -60,13 +65,12 @@ Content-Type: application/json
 ###
 
 
-//@authToken = {{login.response.headers.body.$.token}}
+@authToken = {{login.response.body.token}}
 
 //-------------------------
-//DELETE http://{{HOST}}:{{PORT}}/api/users/name_or_id
-DELETE http://{{HOST}}:{{PORT}}/api/users/5efe3956bdb1292738d7b3c4
-//Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ikphc2thIEpva3VuZW4iLCJpZCI6IjVlZWI2MjJmMTQ5ZWNiM2E4MGE4MTExNCIsImlhdCI6MTU5MjU1MDg4N30.KIeV5xe8Z9obPWP6CHEyQ9_SlcmeJJuAaWFY4Tlwnr0
-Authorization: bearer {{1authToken}}
+//DELETE 
+DELETE http://{{HOST}}:{{PORT}}/api/users/{{id_of_last_user}}
+Authorization: bearer {{authToken}}
 ###
 
 PUT http://{{HOST}}:{{PORT}}/api/users/
@@ -74,10 +78,9 @@ Content-Type: application/json
 Authorization: bearer {{authToken}}
 
 {
-	"id": "5f0b0cab19e562676c01ce79",
-	"email": "mocha.java@gmail.com"
-  	//"nickname": "espresso",
-	//"fullname": "Mocha Latte",
+	"id": "{{id_of_last_user}}",
+	//"email": "mochax@gmail.com"
+  	"nickname": "Mocha javafava"
 	//"description": "new cafe -admin",
 	//"userType": "admin" 
 }

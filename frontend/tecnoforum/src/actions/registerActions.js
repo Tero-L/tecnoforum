@@ -1,22 +1,19 @@
-import { loading, endLoading } from './loginActions';
-
 //Action constants
 
 export const REGISTER_SUCCESS = 'REGISTER_SUCCESS';
 export const REGISTER_FAILED = 'REGISTER_FAILED';
 
 //Async Actions
-export const onRegister = (user) => {
-  return (dispatch) => {
+export const onRegister = (dispatch, user) => {
     let request = {
       method: 'POST',
       mode: 'cors',
       headers: { 'Content-type': 'application/json' },
       body: JSON.stringify(user),
     };
-    dispatch(loading());
+    // dispatch(loading());
     fetch('/api/users', request).then((response) => {
-		dispatch(endLoading());
+		// dispatch(endLoading());
         if (response.ok) {
 		  dispatch(registerSuccess());
         } else {
@@ -30,11 +27,10 @@ export const onRegister = (user) => {
             });
           }
         }
-      }).catch((error) => {
-		dispatch(endLoading());
-        dispatch(registerFailed(`Server responded with status: ${error}`));
-      });
-  };
+	}).catch((error) => {
+		// dispatch(endLoading());
+		dispatch(registerFailed(`Server responded with status: ${error}`));
+	});
 };
 // Action Creators
 

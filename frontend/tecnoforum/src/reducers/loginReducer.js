@@ -1,101 +1,68 @@
-import {
-  LOADING,
-  END_LOADING,
-  LOGIN_SUCCESS,
-  LOGIN_FAILED,
-  LOGOUT_SUCCESS,
-  LOGOUT_FAILED,
-} from '../actions/loginActions';
+import { LOGIN_SUCCESS,
+	LOGIN_FAILED,
+	LOGOUT_SUCCESS,
+	LOGOUT_FAILED } from '../actions/loginActions';
 
-/*
-state
-{
-	token:"",
-	isLogged:false,
-	loading:false,
-	error:""
+const sessionString = 'loginstate';
+const loadInitialState = () => {
+	if ( sessionStorage.getItem (sessionString) ) 
+	{
+		let loginstate = JSON.parse(sessionStorage.getItem(sessionString));
+		loginstate.error = "";
+		return loginstate;
+	}
+	else
+	{
+		return {
+			token: '',
+			user: {},
+			isLogged: false,
+			error: '',
+		};
+	}
 }
-*/
 
-const getInitialStateFromStorage = () => {
-  if (sessionStorage.getItem('loginstate')) {
-	let loginstate = JSON.parse(sessionStorage.getItem('loginstate'));
-	loginstate.error = '';
-    return loginstate;
-  } else {
-    return {
-	  token: '',
-	  user: {},
-      isLogged: false,
-      loading: false,
-      error: '',
-    };
-  }
-};
+export const loginInit = loadInitialState ();
 
-const saveToStorage = (state) => {
-  sessionStorage.setItem('loginstate', JSON.stringify(state));
-};
-
-const initialState = getInitialStateFromStorage();
-
-const loginReducer = (state = initialState, action) => {
-  console.log('LoginReducer, action:', action);
-  let tempState = {};
-  switch (action.type) {
-    case LOADING:
-      return {
-        ...state,
-        loading: true,
-        error: '',
-      };
-    case END_LOADING:
-      return {
-        ...state,
-        loading: false,
-        error: '',
-      };
-    case LOGIN_SUCCESS:
-      tempState = {
-        isLogged: true,
-		token: action.data.token,
-		user: action.data.user,
-        error: '',
-        loading: false,
-      };
-      saveToStorage(tempState);
-      return tempState;
-    case LOGIN_FAILED:
-      tempState = {
-        ...state,
-        error: action.error,
-        loading: false,
-      };
-      saveToStorage(tempState);
-      return tempState;
-    case LOGOUT_SUCCESS:
-      tempState = {
-        isLogged: false,
-		token: '',
-		user: {},
-        error: '',
-        loading: false,
-      };
-      saveToStorage(tempState);
-      return tempState;
-    case LOGOUT_FAILED:
-      tempState = {
-        isLogged: false,
-        token: '',
-		user: {},
-        error: action.error,
-        loading: false,
-      };
-      saveToStorage(tempState);
-      return tempState;
-    default:
-      return state;
-  }
-};
-
-export default loginReducer;
+export const LoginReducer = (login, action) => {
+	console.log('LoginReducer, action:', action);
+	let state = {};
+	switch (action.type)
+	{
+		case LOGIN_SUCCESS:
+			state = {
+				isLogged: true,
+				token: action.data.token,
+				user: action.data.user,
+				error: '',
+				loading: false,
+			};
+			break;
+		case LOGIN_FAILED:
+			state = {
+				...login,
+				error: action.error
+			};
+			break;
+		case LOGOUT_SUCCESS:
+			state = {
+				isLogged: false,
+				token: '',
+				user: {},
+				error: ''
+			};
+			break;
+		case LOGOUT_FAILED:
+			state = {
+				isLogged: false,
+				token: '',
+				user: {},
+				error: action.error
+			};
+			break;
+		default:
+			return login;
+	}
+	sessionStorage.setItem(sessionString, JSON.stringify(state));
+	return state;
+}
